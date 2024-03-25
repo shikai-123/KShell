@@ -1,0 +1,14 @@
+﻿################################################################################
+# 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
+################################################################################
+
+/.vs
+/KShell/Debug/KShell.tlog
+/KShell/Debug/qmake
+/KShell/Debug
+/Project/测试区/工位采集器/192.168.100.249
+/Temp
+/log
+/Debug/KShell.exe
+/Debug/KShell.ilk
+/Debug/KShell.pdb

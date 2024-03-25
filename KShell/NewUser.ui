@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NewUser</class>
+ <widget class="QWidget" name="NewUser">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>253</width>
+    <height>411</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>新建工程</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>70</y>
+     <width>209</width>
+     <height>271</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>采集器信息</string>
+   </property>
+   <widget class="QLineEdit" name="le_N2NIP">
+    <property name="geometry">
+     <rect>
+      <x>64</x>
+      <y>180</y>
+      <width>133</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="inputMask">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lb_IP_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>180</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>N2N</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lb_UserName">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>75</y>
+      <width>36</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>用户名</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="le_ElectRoomID">
+    <property name="geometry">
+     <rect>
+      <x>65</x>
+      <y>23</y>
+      <width>133</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="inputMask">
+     <string/>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lb_ElectRoomID">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>23</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>配电室ID</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lb_PassWord">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>101</y>
+      <width>24</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>密码</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lb_IP">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>153</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>IP</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lb_Port">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>127</y>
+      <width>24</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>端口</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lb_Note">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>230</y>
+      <width>24</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>备注</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lb_DevIndex">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>49</y>
+      <width>24</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>编号</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="le_DevIndex">
+    <property name="geometry">
+     <rect>
+      <x>65</x>
+      <y>49</y>
+      <width>133</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="inputMask">
+     <string/>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lb_DevName">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>204</y>
+      <width>24</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>设备</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="le_Port">
+    <property name="geometry">
+     <rect>
+      <x>65</x>
+      <y>127</y>
+      <width>133</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>22</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="le_PassWord">
+    <property name="geometry">
+     <rect>
+      <x>65</x>
+      <y>101</y>
+      <width>133</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="inputMask">
+     <string/>
+    </property>
+    <property name="text">
+     <string>nk5730</string>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Password</enum>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="le_UserName">
+    <property name="geometry">
+     <rect>
+      <x>65</x>
+      <y>75</y>
+      <width>133</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="inputMask">
+     <string/>
+    </property>
+    <property name="text">
+     <string>root</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="le_Note">
+    <property name="geometry">
+     <rect>
+      <x>65</x>
+      <y>230</y>
+      <width>133</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>我是备注</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cb_DeVname">
+    <property name="geometry">
+     <rect>
+      <x>65</x>
+      <y>204</y>
+      <width>62</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>中嵌</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>集智达</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>华威</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>研华</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>centos</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLineEdit" name="le_IP">
+    <property name="geometry">
+     <rect>
+      <x>65</x>
+      <y>153</y>
+      <width>133</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="inputMask">
+     <string/>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="pb_Confirm">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>352</y>
+     <width>75</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">/**正常情况下样式**/
+QPushButton{
+    color: rgb(255, 170, 127)
+}
+</string>
+   </property>
+   <property name="text">
+    <string>确定</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="le_ProjectName">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>40</y>
+     <width>133</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="inputMask">
+    <string/>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_ProjectName">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>40</y>
+     <width>48</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>项目名字</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_ProjectRegion">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>10</y>
+     <width>48</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>地区</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cb_ProjectRegion">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>10</y>
+     <width>131</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
