@@ -68,17 +68,15 @@ public:
 	void InitTapWidget();
 	void InitTable();
 	void InitCMDWidget();
-	void InitJzagErrTable();
 	void keyReleaseEvent(QKeyEvent *e);
 	void InitForSSHTextRK();
-	void LoadJzagErrCSV();
 	Ui::SSHWindow ui;
 
 
 
 public slots:
-	void slotDataArrived(QString strMsg, QString strIp, int nPort,int SSHIndex);//把收到的终端信息打印出来
-	void slotConnectStateChanged(bool bState,QString Err, int SSHIndex);//改变连接图标的文字
+	void slotDataArrived(QString strMsg, QString strIp, int nPort, int SSHIndex);//把收到的终端信息打印出来
+	void slotConnectStateChanged(bool bState, QString Err, int SSHIndex);//改变连接图标的文字
 	void slotSshSendCmd();
 	void slotSshConnect();
 	void slotSshSendERR(int Err);

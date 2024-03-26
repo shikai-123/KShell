@@ -28,8 +28,6 @@ SSHWindow::SSHWindow(QWidget *parent)
 {
 	ui.setupUi(this);
 	Init();
-	LoadJzagErrCSV();
-	//connect(ui.pb_Connect, SIGNAL(clicked()), g_ProStatusSsh, SLOT(slotRun()));//连接按钮--启动程序检测线程！
 	connect(this, SIGNAL(sigSshSendERR(int)), this, SLOT(slotSshSendERR(int)));
 	connect(this, &SSHWindow::sigJzagErrmsg, this, &SSHWindow::slotPraseJzagErrMsg);
 	connect(this, &SSHWindow::sigStartJzag, this, &SSHWindow::slotClearJzagErrTab);
@@ -112,14 +110,6 @@ void SSHWindow::contextMenuEvent(QContextMenuEvent *)
 		menu->exec(QCursor::pos());
 
 	}
-	else if (ui.tv_SSHErrTab->underMouse())
-	{
-		QMenu *menu = new QMenu(ui.tv_CMDTable);
-		QScopedPointer<QAction> m_ClearJzagErr(new QAction("清空错误信息", ui.tv_CMDTable));
-		connect(m_ClearJzagErr.get(), &QAction::triggered, this, &SSHWindow::slotClearJzagErrTab);
-		menu->addAction(m_ClearJzagErr.get());
-		menu->exec(QCursor::pos());
-	}
 }
 
 /*初始化图标等信息*/
@@ -132,7 +122,6 @@ void SSHWindow::Init()
 	CreatDB();//创造数据库
 	InitTapWidget();//TapWidget初始化
 	InitTable();//命令表格初始化
-	InitJzagErrTable();//Jzag错误信息表格初始化
 	InitCMDWidget();//CMD操作窗口初始化
 	ui.splitter->setStretchFactor(0, 85);//设置分割比例
 	ui.splitter->setStretchFactor(1, 15);
@@ -331,18 +320,7 @@ void SSHWindow::InitCMDWidget()
 	qw_CMDWindow->setWindowTitle("CMD操作");
 }
 
-/*Jzag错误信息表格初始化*/
-void SSHWindow::InitJzagErrTable()
-{
-	m_JzagErrItemModel = new QStandardItemModel();
-	ui.tv_SSHErrTab->setModel(m_JzagErrItemModel);
-	ui.tv_SSHErrTab->setWordWrap(true);
-	m_JzagErrItemModel->setHorizontalHeaderLabels(QStringList() << "错误号" << "错误信息" << "解决办法" << "解释" << "功能");
-	ui.tv_SSHErrTab->setEditTriggers(QAbstractItemView::NoEditTriggers);//不可编辑
-	ui.tv_SSHErrTab->setSelectionBehavior(QAbstractItemView::SelectRows);	//选择行
-	ui.tv_SSHErrTab->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);//自适应列宽...但是太长了之后，内容会省略成省略号
-	ui.tv_SSHErrTab->setWordWrap(true); //自动换行--其实就是识别内部的换行符
-}
+
 
 /*捕捉回车键，发送命令*/
 void SSHWindow::keyReleaseEvent(QKeyEvent * e)
@@ -404,33 +382,6 @@ void SSHWindow::InitForSSHTextRK()
 	{
 		qe_SSHText[m_CurrentSSHIndex]->clear();
 	});
-}
-
-/*加载Jzag错误csv文件*/
-void SSHWindow::LoadJzagErrCSV()
-{
-	g_JzagErrCSV.clear();
-	QString fileName = "./../conf/JzagErr.csv";
-	QFile file(fileName);
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-	{
-		qCritical() << "程序主动退出！读取错误；JzagErr.csv " << file.errorString();
-		exit(-1);
-	}
-	QTextStream in(&file);//Qt 文本流 
-	while (!in.atEnd())
-	{
-		JzagErr jzagerr;
-		QString FileLine = in.readLine();//读取一行
-		QStringList m_CSVLineData = FileLine.split(",");
-		// 从字符串中有","的地方将其分为多个子字符串，QString::SkipEmptyParts表示跳过空的条目 这样即使csv中不按标准来，用了空格也可过滤掉
-		jzagerr.Solution = m_CSVLineData[1];
-		jzagerr.Note = m_CSVLineData[2];
-		jzagerr.FucSection = m_CSVLineData[3];
-		jzagerr.IsRepeatInfo = m_CSVLineData[4].toInt();
-		g_JzagErrCSV[m_CSVLineData[0]] = jzagerr;
-	}
-	file.close();
 }
 
 /*创建新的命令到数据库*/

@@ -83,7 +83,6 @@
        </layout>
       </widget>
      </widget>
-     <widget class="QTableView" name="tv_SSHErrTab"/>
     </widget>
    </item>
   </layout>

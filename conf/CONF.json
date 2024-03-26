@@ -16,7 +16,7 @@
         "Num": 5,
         "Size_MB": 1
     },
-    "LastUsedTime": "2024:03:25",
+    "LastUsedTime": "2024:03:26",
     "N2NIPSec": "252",
     "OtherTools": {
         "Editor": "D:/Notepad++/notepad++.exe",
@@ -25,7 +25,7 @@
         "SSH": "",
         "ToolForCJQ": "C:/Users/45428/Desktop/uicsv.exe"
     },
-    "SHHTogetherFTP": false,
+    "SHHTogetherFTP": true,
     "SSHFTPJzhsDefaultPath": "/mnt/nandflash/jzhs/",
     "SoftSkin": "lightblue.css"
 }
