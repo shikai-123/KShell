@@ -57,8 +57,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
     <ReferencePath>$(ReferencePath)</ReferencePath>
-    <LibraryPath>D:\c++demo\QtProject\KShell\KShell\lib\debug;$(LibraryPath)</LibraryPath>
-    <IncludePath>D:\c++demo\QtProject\KShell\KShell\include;D:\c++demo\QtProject\KShell\KShell\include\curl;D:\c++demo\QtProject\KShell\KShell\include\ssh;D:\QT\5.14.2\msvc2017\include\QtGui\5.14.2;D:\QT\5.14.2\msvc2017\include\QtCore\5.14.2;D:\QT\5.14.2\msvc2017\include\QtGui;D:\QT\5.14.2\msvc2017\include\QtCore;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\c++demo\Qt\KShell\KShell\lib\debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\c++demo\Qt\KShell\KShell\include;D:\c++demo\Qt\KShell\KShell\include\curl;D:\c++demo\Qt\KShell\KShell\include\ssh;D:\QT\5.14.2\msvc2017\include\QtGui\5.14.2;D:\QT\5.14.2\msvc2017\include\QtCore\5.14.2;D:\QT\5.14.2\msvc2017\include\QtGui;D:\QT\5.14.2\msvc2017\include\QtCore;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
   </PropertyGroup>
