@@ -1,14 +1,14 @@
-
+<div align=center>
 ![Static Badge](https://img.shields.io/badge/Builder-shikai123-red)
 
 ![Static Badge](https://img.shields.io/badge/license-MIT-blue)
 
 ![Static Badge](https://img.shields.io/badge/OS-window-blue)
 
-![Static Badge](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
+![Static Badge](https://img.shields.io/badge/C%2B%2B-11-8A2BE2)
 
 ![Static Badge](https://img.shields.io/badge/release-1.0-8A2BE2)
-
+<div align=center>
 
 # 🚀 关于Kshell
 Kshell是一款基于QT和Libcurl开的window平台的一个SSH，FTP工具。
