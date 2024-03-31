@@ -1,11 +1,4 @@
 {
-    "CheckPro": {
-        "Enable": 1,
-        "Time_S": 1
-    },
-    "DataMonit": {
-        "Time_S": 1
-    },
     "Font": {
         "FontType": "",
         "Fontsize": 4
@@ -16,16 +9,11 @@
         "Num": 5,
         "Size_MB": 1
     },
-    "LastUsedTime": "2024:03:26",
-    "N2NIPSec": "252",
+    "LastUsedTime": "2024:03:31",
     "OtherTools": {
-        "Editor": "D:/Notepad++/notepad++.exe",
-        "FTP": "",
-        "N2N": "C:/Program Files/n2n Gui",
-        "SSH": "",
-        "ToolForCJQ": "C:/Users/45428/Desktop/uicsv.exe"
+        "Editor": "D:/Notepad++/notepad++.exe"
     },
     "SHHTogetherFTP": true,
-    "SSHFTPJzhsDefaultPath": "/mnt/nandflash/jzhs/",
+    "SSHFTPJzhsDefaultPath": "/",
     "SoftSkin": "lightblue.css"
 }

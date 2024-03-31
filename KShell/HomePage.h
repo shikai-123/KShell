@@ -33,18 +33,14 @@ public:
 	QAction *m_ActNew;
 	QAction *m_ActSet;
 	QAction *m_ActHelp;
-	QAction *m_ActModbusTypeHelp;
 	QAction *m_ActOpenLogDir;
 	QAction *m_ActDel;
 	QAction *m_ActChange;
 	QAction *m_ActPing;
 	QAction *m_ActPowerShell;
 	QAction *m_ActPowerShellAdmin;
-	QAction *m_ActToolForCJQ;
 	QAction *m_CheckUpdate;
 	QAction *m_AboutMySoftware;
-	QThread* m_pProStatusThread;
-	QThread* m_pProMonitorDataThread;
 	QThread* m_pFTPThread;
 	QThread *m_pUPWorkThread;//自动升级，只会执行一会，到时候把他关掉
 
@@ -64,7 +60,6 @@ public:
 	QWidget* AboutMySoftware;
 	QLabel* lb_AboutMySoftware;
 
-	void StartProStatusThread();
 	void StartFTPThread();
 	void StartUPDateThread();
 	void MenuBar();
@@ -88,7 +83,6 @@ public slots:
 	void solttest();
 	void slotOpenPowershell();
 	void slotOpenPowershellAdmin();
-	void slotOpenoolForCJQ();
 	void slotitemDoubleClicked(QTreeWidgetItem *item, int column);
 	void slotCmdPing();
 	void slotLoadDBtoUserList();
@@ -102,10 +96,8 @@ public slots:
 	void slotDeletOrderDBtoUserList();
 	void slotOpenProjectFile();
 	void slotShowUpdateProcess(int Pro, int All, QString Filename);
-	void slotStartN2N();
 	void slotStopTimer();
 	void slotAboutMySoftware();
-	void slotOpenModbusTypeDoc();
 	void slotOpenLogDir();
 	void slotOpenSSH();
 };

@@ -26,11 +26,7 @@ private:
 signals:
 	void sigRefreshVersion();
 public slots:
-	void slotChoseSSHAddr();
-	void slotChoseFTPAddr();
 	void slotChoseEditorAddr();
-	void slotChoseToolForCJQAddr();
-	void slotN2NAddr();
 	void slotWriteJson();
 	void slotOpenConfJson();
 };

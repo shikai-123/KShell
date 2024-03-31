@@ -21,11 +21,10 @@ public:
 	QCompleter *cp_ProjectNmae;
 	bool m_HasErr = false;
 
-	void ReadProjectNameConf();//以弃用
 	void OpenDB();
 signals:
 	void sigDelted();
-	void sigModifed(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString DevName, QString Note,\
+	void sigModifed(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString DevName, QString Note, \
 		QString OldProjectRegion, QString OldProjectName, QString OldElecRoomID, QString OldDevIndex, QString OldIP, QString OldN2NIP, QString OldPort, QString OldUserName, QString OldPassWord, QString OldDevName, QString OldNote);
 	void sigAddUserItem(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, \
 		QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString DevName, QString Note);

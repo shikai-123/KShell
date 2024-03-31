@@ -26,11 +26,7 @@ struct LogSetting
 /*各种工具设置*/
 struct OtherToolsSetting
 {
-	QString SSH;
-	QString FTP;
 	QString Editor;
-	QString ToolForCJQ;
-	QString N2N;
 };
 
 /*检测jzag 守护进程 是否在线设置*/

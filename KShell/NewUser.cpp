@@ -11,8 +11,6 @@ extern HomePage* g_Home_Page;
 extern QTreeWidgetItem *g_CurrentItem;
 extern QString g_ProjectRegion, g_ElecRoomID, g_DevIndex, g_DevIP, g_N2NIP, g_DevPort, g_UserName, g_UserWord, g_UserListNote, g_DevName, g_ProjectName;
 extern int g_WorM, g_ItemRow, g_TopLevelItemRow;
-QMap<QString, QString> g_ProjectNameCSV;//key工程名 value项目编号
-QMap<QString, QString> g_NameProjectCSV;//key项目编号 value工程名
 extern QSqlDatabase g_UserListDB;
 extern void CheckDir(QString DirName);
 extern NewUser* g_NewUser;
@@ -47,7 +45,7 @@ void NewUser::Init()
 	});
 	//ReadProjectNameConf();
 	QStringList RegionList;
-	RegionList << "测试区" << "密云区" << "延庆区" << "朝阳区" << "丰台区" << "石景山区" << "海淀区" << "门头沟区" << "房山区" << "通州区" << "顺义区" << "昌平区" << "大兴区" << "亦庄开发区" << "怀柔区" << "平谷区" << "东城区" << "西城区";
+	RegionList << "北京" << "上海";
 	ui.cb_ProjectRegion->addItems(RegionList);
 }
 
@@ -84,32 +82,7 @@ void RemoveDir(QString DirName)
 	}
 }
 
-/*读取项目名称CSV文件*/
-void NewUser::ReadProjectNameConf()
-{
-	g_ProjectNameCSV.clear();
-	QString fileName = "./../conf/ProjectList.csv";
-	QFile file(fileName);
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-	{
-		qCritical() << "程序主动退出！Cannot open DataList.csv for reading: " << file.errorString();
-		exit(-1);
-	}
-	QTextStream in(&file);//Qt 文本流 
-	while (!in.atEnd())
-	{
-		QString FileLine = in.readLine();//读取一行
-		m_CSVLineData = FileLine.split(",", QString::SkipEmptyParts);
-		// 从字符串中有","的地方将其分为多个子字符串，QString::SkipEmptyParts表示跳过空的条目 这样即使csv中不按标准来，用了空格也可过滤掉
-		g_ProjectNameCSV[m_CSVLineData[0]] = m_CSVLineData[1];
-		g_NameProjectCSV[m_CSVLineData[1]] = m_CSVLineData[0];
-		m_ProjectNameList << m_CSVLineData[0];
-	}
-	file.close();
-	cp_ProjectNmae = new QCompleter(m_ProjectNameList, this);
-	cp_ProjectNmae->setFilterMode(Qt::MatchContains);//内容匹配
-	ui.le_ProjectName->setCompleter(cp_ProjectNmae);
-}
+
 
 /*打开数据库*/
 void NewUser::OpenDB()
@@ -131,16 +104,16 @@ void NewUser::OpenDB()
 void NewUser::slotFillDate()
 {
 	qDebug() << "NewUser::slotFillDate()";
-	ui.cb_DeVname->setCurrentText(g_ProjectRegion);
+	ui.cb_FTPType->setCurrentText(g_ProjectRegion);
 	ui.le_ProjectName->setText(g_ProjectName);
-	ui.le_ElectRoomID->setText(g_ElecRoomID);
-	ui.le_DevIndex->setText(g_DevIndex);
+	ui.le_No1ID->setText(g_ElecRoomID);
+	ui.le_No2ID->setText(g_DevIndex);
 	ui.le_UserName->setText(g_UserName);
 	ui.le_PassWord->setText(g_UserWord);
 	ui.le_IP->setText(g_DevIP);
-	ui.le_N2NIP->setText(g_N2NIP);
+	ui.le_IP2->setText(g_N2NIP);
 	ui.le_Port->setText(g_DevPort);
-	ui.cb_DeVname->setCurrentText(g_DevName);
+	ui.cb_FTPType->setCurrentText(g_DevName);
 	ui.le_Note->setText(g_UserListNote);
 }
 
@@ -149,26 +122,19 @@ void NewUser::slotCreatProjectToDB()
 {
 	if (g_WorM == 0)
 	{
-		//ProjectName, ElecRoomID, DevIndex,IP,Port,UserName,PassWord,DevName,Note
-		/*if (g_ProjectNameCSV.find(ui.le_ProjectName->text()) == g_ProjectNameCSV.end())
-		{
-			QMessageBox::critical(this, "新建用户错误", "该用户在CSV文件中不存在");
-			m_HasErr = true;
-			return;
-		}*/
 		OpenDB();
 		qDebug() << " NewUser::soltWriteUserListDB()";
 		QString ProjectRegion = ui.cb_ProjectRegion->currentText();
 		QString ProjectName = ui.le_ProjectName->text();
-		QString ElecRoomID = ui.le_ElectRoomID->text();
-		QString DevIndex = ui.le_DevIndex->text();
+		QString ElecRoomID = ui.le_No1ID->text();
+		QString DevIndex = ui.le_No2ID->text();
 		QString UserName = ui.le_UserName->text();
 		QString PassWord = ui.le_PassWord->text();
 		QString IP = ui.le_IP->text();
-		QString N2NIP = ui.le_N2NIP->text();
+		QString N2NIP = ui.le_IP2->text();
 		QString Port = ui.le_Port->text();
 		QString Note = ui.le_Note->text();
-		QString DevName = ui.cb_DeVname->currentText();
+		QString DevName = ui.cb_FTPType->currentText();
 		if (ProjectRegion == "" || ProjectName == "" || ElecRoomID == "" || DevIndex == "" || UserName == "" || PassWord == "" || IP == "" || Port == "" || Note == "" || DevName == "")
 		{
 			QMessageBox::critical(this, "错误", "内容不能为空！");
@@ -322,14 +288,14 @@ void NewUser::soltModifProjectFromDB()
 		else if (g_ProjectName != "" && g_DevIP != "")//子子节点
 		{
 			query.prepare("update UserList  set ElecRoomID = ?, DevIndex = ?, IP = ?,N2NIP = ?, Port = ?, UserName = ?, PassWord = ?, DevName = ?, Note = ? where  ProjectRegion = ?  and ProjectName=? and  ElecRoomID=? and  DevIndex=? and  IP=?  and  N2NIP=? and Port=?	and UserName=?	and PassWord=?	and DevName=?	and Note=?"); //名称绑定的方式 注意和一般的sql语句不同的是，在text类型的时候他不需要加 ''
-			query.addBindValue(ui.le_ElectRoomID->text());
-			query.addBindValue(ui.le_DevIndex->text());
+			query.addBindValue(ui.le_No1ID->text());
+			query.addBindValue(ui.le_No2ID->text());
 			query.addBindValue(ui.le_IP->text());
-			query.addBindValue(ui.le_N2NIP->text());
+			query.addBindValue(ui.le_IP2->text());
 			query.addBindValue(ui.le_Port->text());
 			query.addBindValue(ui.le_UserName->text());
 			query.addBindValue(ui.le_PassWord->text());
-			query.addBindValue(ui.cb_DeVname->currentText());
+			query.addBindValue(ui.cb_FTPType->currentText());
 			query.addBindValue(ui.le_Note->text());
 
 			query.addBindValue(g_ProjectRegion);
@@ -348,10 +314,10 @@ void NewUser::soltModifProjectFromDB()
 				RenameDir("./../Project/" + g_ProjectRegion + "/" + g_ProjectName, g_DevIP, ui.le_IP->text());
 			}
 		}
-		emit sigModifed(ui.cb_ProjectRegion->currentText(), ui.le_ProjectName->text(), ui.le_ElectRoomID->text(), ui.le_DevIndex->text(), ui.le_IP->text(),\
-			ui.le_N2NIP->text(),ui.le_Port->text(),ui.le_UserName->text(),ui.le_PassWord->text(),ui.cb_DeVname->currentText(),ui.le_Note->text(),\
+		emit sigModifed(ui.cb_ProjectRegion->currentText(), ui.le_ProjectName->text(), ui.le_No1ID->text(), ui.le_No2ID->text(), ui.le_IP->text(), \
+			ui.le_IP2->text(), ui.le_Port->text(), ui.le_UserName->text(), ui.le_PassWord->text(), ui.cb_FTPType->currentText(), ui.le_Note->text(), \
 			g_ProjectRegion, g_ProjectName, g_ElecRoomID, g_DevIndex, g_DevIP, g_N2NIP, g_DevPort, g_UserName, g_UserWord, g_DevName, g_UserListNote
-			);
+		);
 	}
 	return;
 }
@@ -359,7 +325,5 @@ void NewUser::soltModifProjectFromDB()
 void NewUser::solttest()
 {
 	qDebug() << "调用NewUser::solttest()";
-
-
 
 }

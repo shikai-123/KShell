@@ -44,7 +44,6 @@ extern DataMonitSetting g_DataMonitSetting;
 extern FontSetting g_FontSetting;
 extern QString g_SSHFTPJzhsDefaultPath;//jzhs默认目录
 extern bool g_IsSHHTogetherFTP;//SHH,FTP窗口是否聚合
-extern QString g_N2NIPSec;//N2NIP的最后一部分
 extern QString g_LastUsedTime;//软件最后一次打开时间for自动更新检测
 extern bool g_ISUpDate;
 
@@ -172,7 +171,7 @@ void HomePage::InitreeWidge()
 {
 	//设置树控件的头信息
 	QStringList list;
-	list << "地区、用户" << "配电室" << "采集器" << "IP" << "N2N" << "Port" << "User" << "PW" << "设备型号" << "备注";
+	list << "地区、用户" << "一级编号" << "二级编号" << "IP" << "IP2" << "Port" << "User" << "PW" << "FTP类型" << "备注";
 	ui.treeWidgetUserList->setHeaderLabels(list);
 	ui.treeWidgetUserList->clear();
 	ui.treeWidgetUserList->setSortingEnabled(true);
@@ -198,24 +197,7 @@ void HomePage::slotOpenPowershellAdmin()
 
 }
 
-/*调用ToolForCJQ*/
-void HomePage::slotOpenoolForCJQ()
-{
-	//取消了QProcess 直接用QDesktopServices 来打开本地文件 能打开，但是软件本身去读ini失败，猜测原因是 ToolforCJQ1的相对路径不是 下面的路径了 而是我工具的路径 把工具放我的目录中应该就行了
-	qDebug() << " HomePage::slotOpenoolForCJQ()";
-	//QDesktopServices::openUrl(QUrl::fromLocalFile("C:/Users/45428/Desktop/tool4CJQ/tool4CJQ/ToolforCJQ1.0.11.exe"));
-	QDesktopServices::openUrl(QUrl::fromLocalFile(g_OtherToolsSetting.ToolForCJQ));
-	//g_OtherToolsSetting.ToolForCJQ
 
-}
-
-/*开启状态检测线程*/
-void HomePage::StartProStatusThread()
-{
-	//m_pProStatusThread = new QThread();//创建线程对象
-	//g_ProStatusSsh->moveToThread(m_pProStatusThread);//把g_ProStatusSsh对象 整体 移动到m_pProStatusThread上
-	//m_pProStatusThread->start();//启动线程
-}
 
 /*开启FTP线程*/
 void HomePage::StartFTPThread()
@@ -251,8 +233,6 @@ void HomePage::MenuBar()
 	m_MenuTool->addAction(m_ActPowerShell);
 	m_ActPowerShellAdmin = new QAction("PowerShell(管理员)", this);
 	m_MenuTool->addAction(m_ActPowerShellAdmin);
-	m_ActToolForCJQ = new QAction("ToolForCJQ", this);
-	m_MenuTool->addAction(m_ActToolForCJQ);
 
 	m_MenuSet = new QMenu("设置", this);
 	m_MenuBar->addMenu(m_MenuSet);
@@ -263,8 +243,6 @@ void HomePage::MenuBar()
 	m_MenuBar->addMenu(m_MenuHelp);
 	m_ActHelp = new QAction("帮助", this);
 	m_MenuHelp->addAction(m_ActHelp);
-	m_ActModbusTypeHelp = new QAction("ModbusType类型说明", this);
-	m_MenuHelp->addAction(m_ActModbusTypeHelp);
 	m_ActOpenLogDir = new QAction("打开log目录", this);
 	m_MenuHelp->addAction(m_ActOpenLogDir);
 
@@ -286,10 +264,8 @@ void HomePage::MenuBar()
 	connect(m_ActHelp, SIGNAL(triggered()), g_HelpWindows, SLOT(show()));/*打开帮助窗口*/
 	connect(m_ActPowerShell, SIGNAL(triggered()), this, SLOT(slotOpenPowershell()));/*打开powershell*/
 	connect(m_ActPowerShellAdmin, SIGNAL(triggered()), this, SLOT(slotOpenPowershellAdmin()));/*打开powershell-admin*/
-	connect(m_ActToolForCJQ, SIGNAL(triggered()), this, SLOT(slotOpenoolForCJQ()));/*打开toforcjq*/
 	connect(m_CheckUpdate, &QAction::triggered, g_UPDate, &UPDate::slotStartUPDate);/*启动自动升级线程*/
 	connect(m_AboutMySoftware, &QAction::triggered, this, &HomePage::slotAboutMySoftware);/*打开软件介绍窗口*/
-	connect(m_ActModbusTypeHelp, &QAction::triggered, this, &HomePage::slotOpenModbusTypeDoc);/*打开modbus类型说明文件*/
 	connect(m_ActOpenLogDir, &QAction::triggered, this, &HomePage::slotOpenLogDir);/*打开log目录*/
 
 }
@@ -302,8 +278,6 @@ void HomePage::contextMenuEvent(QContextMenuEvent *)
 	QScopedPointer<QAction> m_ActChange(new QAction("修改", ui.treeWidgetUserList));
 	QScopedPointer<QAction> m_ActPing(new QAction("Ping", ui.treeWidgetUserList));
 	QScopedPointer<QAction> m_ActOpenProjectFile(new QAction("工程目录", ui.treeWidgetUserList));
-	QScopedPointer<QAction> m_ActStartN2N(new QAction("连接N2N", ui.treeWidgetUserList));
-	QScopedPointer<QAction> m_ActRebootDev(new QAction("重启采集器", ui.treeWidgetUserList));
 	QScopedPointer<QAction> m_PoweshellSSH(new QAction("用CMD连接SSH", ui.treeWidgetUserList));
 	connect(m_ActNew, SIGNAL(triggered()), g_NewUser, SLOT(show()));//右键活菜单栏新建打开新建项目窗口
 	connect(m_ActNew, &QAction::triggered, [&]() {
@@ -314,7 +288,6 @@ void HomePage::contextMenuEvent(QContextMenuEvent *)
 	connect(m_ActChange.get(), SIGNAL(triggered()), g_NewUser, SLOT(slotFillDate()));//右键修改填充新建项目窗口数据
 	connect(m_ActPing.get(), SIGNAL(triggered()), this, SLOT(slotCmdPing()), Qt::UniqueConnection);//右键PIng选中的IP
 	connect(m_ActOpenProjectFile.get(), SIGNAL(triggered()), this, SLOT(slotOpenProjectFile()), Qt::UniqueConnection);//右键查看选中的IP的工程文件夹
-	connect(m_ActStartN2N.get(), SIGNAL(triggered()), this, SLOT(slotStartN2N()), Qt::UniqueConnection);//启动N2N
 	connect(m_PoweshellSSH.get(), SIGNAL(triggered()), this, SLOT(slotOpenSSH()), Qt::UniqueConnection);//右键启动SSH
 
 	connect(m_ActChange.get(), &QAction::triggered, [&]() {g_WorM = 1; });
@@ -324,10 +297,6 @@ void HomePage::contextMenuEvent(QContextMenuEvent *)
 	menu->addSeparator();
 	menu->addAction(m_ActPing.get());
 	menu->addAction(m_ActOpenProjectFile.get());
-	menu->addSeparator();
-	menu->addAction(m_ActStartN2N.get());
-	menu->addSeparator();
-	menu->addAction(m_ActRebootDev.get());
 	menu->addSeparator();
 	menu->addAction(m_PoweshellSSH.get());
 	menu->exec(QCursor::pos());//！！！！connect函数必须放在 这句话的上面，至于为啥，暂不清楚！--因为执行到这个地方，右键才出来，如果在后面connect的话，connect是无效的。
@@ -566,31 +535,8 @@ void HomePage::slotShowUpdateProcess(int Pro, int All, QString Filename)
 	qmb_UpdateProcess->show();
 }
 
-/*启动N2N*/
-void HomePage::slotStartN2N()
-{
-	if (!QFile::exists("./../Tools/StartN2N.bat"))
-	{
-		QMessageBox::critical(this, "n2n启动失败", "StartN2N.bat缺失");
-		return;
-	}
-	if (g_N2NIP == "" || g_N2NIPSec == "")
-	{
-		QMessageBox::critical(this, "n2n连接错误", "n2n IP为空\n或者\n你的配置文件N2N后缀为空");
-		return;
-	}
-	g_ConnetIP = g_N2NIP;
-	QString MyN2nIP = g_N2NIP;
-	MyN2nIP.remove(g_N2NIP.lastIndexOf(".") + 1, 3);
-	MyN2nIP += g_N2NIPSec;
-	//C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe
-	//./../test/UPdateForEXE.bat
-	//return;
-	QProcess p;
-	p.startDetached("powershell", QStringList() << "Start-Process -FilePath ./../Tools/StartN2N.bat -ArgumentList " << "\"`\"" + g_OtherToolsSetting.N2N + "`\"\"" << "," << MyN2nIP);//多个参数用逗号分开
-	//p.startDetached("powershell", QStringList() << "Start-Process -FilePath ./../Tools/StartN2N.bat ");//多个参数用逗号分开
-	//p.startDetached("powershell", QStringList() << "start-process PowerShell -verb runas");
-}
+
+
 
 /*停止自动升级的定时器*/
 void HomePage::slotStopTimer()
@@ -613,18 +559,7 @@ void HomePage::slotAboutMySoftware()
 	AboutMySoftware->show();
 }
 
-/*打开modbustype类型说明文档*/
-void HomePage::slotOpenModbusTypeDoc()
-{
-	if (QFile::exists(("./../Tools/Jzag-Modbus数据解析类型说明.docx")))//!!要注意的是通过qt打开后，脚本的执行位置和脚本所在的位置是不一样的。
-	{
-		QDesktopServices::openUrl(QUrl::fromLocalFile("./../Tools/Jzag-Modbus数据解析类型说明.docx"));
-	}
-	else
-	{
-		QMessageBox::critical(this, "Modbus数据解析类型说明.", "打开失败，该文件不存在！检查该文件./../Tools/Jzag-Modbus数据解析类型说明.docx");
-	}
-}
+
 
 /*打开log目录*/
 void HomePage::slotOpenLogDir()

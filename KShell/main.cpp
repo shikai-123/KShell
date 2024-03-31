@@ -29,7 +29,6 @@ DataMonitSetting g_DataMonitSetting;
 FontSetting g_FontSetting;
 QString g_SSHFTPJzhsDefaultPath;//jzhs默认目录
 bool g_IsSHHTogetherFTP;//SHH,FTP窗口是否聚合
-QString g_N2NIPSec;//N2NIP的最后一部分
 QString g_LastUsedTime;//软件最后一次打开时间for自动更新检测
 bool g_ISUpDate = false;
 QJsonObject g_jsonObject;
@@ -141,7 +140,6 @@ void LoadConf()
 	//qDebug() << "jsonObject[name]==" << jsonObject["Author"].toString();
 	g_SSHFTPJzhsDefaultPath = jsonObject["SSHFTPJzhsDefaultPath"].toString();
 	g_IsSHHTogetherFTP = jsonObject["SHHTogetherFTP"].toBool();
-	g_N2NIPSec = jsonObject["N2NIPSec"].toString();
 
 	QJsonValue jsonValueList = jsonObject.value(QStringLiteral("LOG"));
 	QJsonObject item = jsonValueList.toObject();
@@ -152,11 +150,7 @@ void LoadConf()
 
 	jsonValueList = jsonObject.value(QStringLiteral("OtherTools"));
 	item = jsonValueList.toObject();
-	g_OtherToolsSetting.SSH = item["SSH"].toString();
-	g_OtherToolsSetting.FTP = item["FTP"].toString();
 	g_OtherToolsSetting.Editor = item["Editor"].toString();
-	g_OtherToolsSetting.ToolForCJQ = item["ToolForCJQ"].toString();
-	g_OtherToolsSetting.N2N = item["N2N"].toString();
 
 	jsonValueList = jsonObject.value(QStringLiteral("CheckPro"));
 	item = jsonValueList.toObject();

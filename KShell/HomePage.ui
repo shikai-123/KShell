@@ -27,7 +27,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>采集器综合工具—1.3.8—内部测试版本—不要外泄—诸神黄昏</string>
+     <string>综合工具—1.0</string>
     </property>
     <property name="textFormat">
      <enum>Qt::AutoText</enum>

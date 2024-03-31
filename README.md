@@ -1,25 +1,15 @@
+
 ![Static Badge](https://img.shields.io/badge/Builder-shikai123-red)
-[![Contributors][contributors-shield]][contributors-url] 
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+
+![Static Badge](https://img.shields.io/badge/license-MIT-blue)
+
+![Static Badge](https://img.shields.io/badge/OS-window-blue)
+
+![Static Badge](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
+
+![Static Badge](https://img.shields.io/badge/release-1.0-8A2BE2)
 
 
-[your-project-path]:shaojintian/Best_README_template
-[contributors-shield]: https://img.shields.io/github/contributors/shaojintian/Best_README_template.svg?style=flat-square
-[contributors-url]: https://github.com/shaojintian/Best_README_template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/shaojintian/Best_README_template.svg?style=flat-square
-[forks-url]: https://github.com/shaojintian/Best_README_template/network/members
-[stars-shield]: https://img.shields.io/github/stars/shaojintian/Best_README_template.svg?style=flat-square
-[stars-url]: https://github.com/shaojintian/Best_README_template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/shaojintian/Best_README_template.svg?style=flat-square
-[issues-url]: https://img.shields.io/github/issues/shaojintian/Best_README_template.svg
-[license-shield]: https://img.shields.io/github/license/shaojintian/Best_README_template.svg?style=flat-square
-[license-url]: https://github.com/shaojintian/Best_README_template/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/shaojintian
 # 🚀 关于Kshell
 Kshell是一款基于QT和Libcurl开的window平台的一个SSH，FTP工具。
 
@@ -37,12 +27,6 @@ Kshell是一款基于QT和Libcurl开的window平台的一个SSH，FTP工具。
 
 在relase中下载安装包即可。
     
-## 🔗 链接
-[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://katherineoelsner.com/)
-[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/)
-[![twitter](https://img.shields.io/badge/twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/)
-
-
 ## 截图
 
 ![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
@@ -51,14 +35,4 @@ Kshell是一款基于QT和Libcurl开的window平台的一个SSH，FTP工具。
 # 使用方法/示例
 
 
-
-
-## 作者
-
-- [@octokatherine](https://www.github.com/octokatherine)
-
-
-## 文档
-
-[文档](https://linktodocumentation)
 
