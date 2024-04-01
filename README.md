@@ -23,17 +23,32 @@ Kshell是一款基于QT和Libcurl开的window平台的一个SSH，FTP工具。
 
 
 
-## 安装
 
-在relase中下载安装包即可。
     
-## 截图
+# 截图
 
-![App Screenshot](./screenshot/ftp客户端.png)
+首页
+![image](./screenshot/首页.png) 
 
+新建工程
+![image](./screenshot/新建工程.png) 
+
+SSH客户端
+![image](./screenshot/SSH客户端.png) 
+
+ftp客户端
 ![image](./screenshot/ftp客户端.png) 
 
+SHH和FTP融合
+![image](./screenshot/SHH和FTP融合.png) 
+
+# 安装
+
+在relase中下载安装包即可。
+
+
 # 使用方法/示例
+参考我在b站的视频
 
 
 
