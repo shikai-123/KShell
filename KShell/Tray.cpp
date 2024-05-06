@@ -11,26 +11,21 @@ extern HelpWindows* g_HelpWindows;
 
 Tray::Tray(HomePage& Home_Page)
 {
-	QIcon icon_logo = QIcon(":/img/logo.ico");//:/img/logo.ico
-	QIcon icon_resev = QIcon(":/img/还原.png");
+	QIcon icon_logo = QIcon(":/img/logo.ico");
 	QIcon icon_quite = QIcon(":/img/退出.png");
 	QIcon icon_home = QIcon(":/img/首页.png");
-	QIcon icon_zuixiaohua = QIcon(":/img/最小化.png");
 	QIcon icon_SSH = QIcon(":/img/SSH终端.png");
 	QIcon icon_FTP = QIcon(":/img/ftp.png");
-	QIcon icon_Moniyot = QIcon(":/img/数据图.png");
 	QIcon icon_Setting = QIcon(":/img/设置.png");
 	QIcon icon_Help = QIcon(":/img/帮助.png");
-	QIcon icon_View = QIcon(":/img/查看.png");
-	QIcon icon_CJQConf = QIcon(":/img/文件配置.png");
 	QIcon icon_Reopen = QIcon(":/img/还原.png");
 
 
 
 	trayIcon = new QSystemTrayIcon(this);// 创建托盘对象
 	trayIcon->setIcon(icon_logo);
-	trayIcon->setToolTip(tr("采集器综合管理工具"));
-	QString titlec = tr("采集器综合管理工具");
+	trayIcon->setToolTip(tr("KShell"));
+	QString titlec = tr("欢迎使用KShell");
 	QString textc = tr("Designed by SK");
 	trayIcon->show();
 	trayIcon->showMessage(titlec, textc, QSystemTrayIcon::Information, 50000); //弹出气泡提示
@@ -57,8 +52,6 @@ Tray::Tray(HomePage& Home_Page)
 		g_FTPTreeList->showNormal();
 		g_FTPTreeList->raise();
 	});
-	qa_MonitorData = new QAction(tr("实时数据"), this);
-	qa_MonitorData->setIcon(icon_Moniyot);//
 
 	qa_Setting = new QAction(tr("设置"), this);
 	qa_Setting->setIcon(icon_Setting);//
@@ -86,19 +79,18 @@ Tray::Tray(HomePage& Home_Page)
 	});
 
 	//创建右键弹出菜单
-	//trayIconMenu = new QMenu(this);
-	//trayIconMenu->addSeparator();//添加分割线
-	//trayIconMenu->addAction(qa_Guidwindow);
-	//trayIconMenu->addAction(qa_SSHwindow);
-	//trayIconMenu->addAction(qa_FTPwindow);
-	//trayIconMenu->addAction(qa_CJQConf);
-	////trayIconMenu->addAction(qa_Setting);
-	////trayIconMenu->addAction(qa_Help);
-	//trayIconMenu->addSeparator();//添加分割线
-	//trayIconMenu->addAction(qa_ReOpen);
-	//trayIconMenu->addAction(quitAction);
+	trayIconMenu = new QMenu(this);
+	trayIconMenu->addSeparator();//添加分割线
+	trayIconMenu->addAction(qa_Guidwindow);
+	trayIconMenu->addAction(qa_SSHwindow);
+	trayIconMenu->addAction(qa_FTPwindow);
+	trayIconMenu->addAction(qa_Setting);
+	trayIconMenu->addAction(qa_Help);
+	trayIconMenu->addSeparator();//添加分割线
+	trayIconMenu->addAction(qa_ReOpen);
+	trayIconMenu->addAction(quitAction);
 
-	//trayIcon->setContextMenu(trayIconMenu);//把菜单填充到托盘图标中
+	trayIcon->setContextMenu(trayIconMenu);//把菜单填充到托盘图标中
 }
 
 void Tray::trayiconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -123,12 +115,8 @@ Tray::~Tray()
 	{
 		qDebug() << "程序退出,开始替换exe文件";
 		if (QFile::exists(("./../Tools/UPdateForEXE.bat")))//!!要注意的是通过qt打开后，脚本的执行位置和脚本所在的位置是不一样的。
-		{
 			QDesktopServices::openUrl(QUrl::fromLocalFile("./../Tools/UPdateForEXE.bat"));
-		}
 		else
-		{
 			QMessageBox::critical(this, "自动升级", "exe升级失败，没有升级脚本！检查该文件./../Tools/UPdateForEXE.bat");
-		}
 	}
 }

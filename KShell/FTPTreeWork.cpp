@@ -5,7 +5,7 @@
 #include "CJQConf.h"
 extern FTPTreeWork * g_FTPTreeWork;
 extern FTPTreeList * g_FTPTreeList;
-extern QString g_DevIP, g_DevPort, g_ConnetIP, g_UserName, g_UserWord, g_UserListNote, g_DevName, g_ProjectName, g_FTPHead;//用于采集登录信息
+extern QString g_DevIP, g_DevPort, g_ConnetIP, g_UserName, g_UserWord, g_UserListNote, g_FTPType, g_ProjectName, g_FTPHead;//用于采集登录信息
 extern OtherToolsSetting g_OtherToolsSetting;
 QString g_FTPCurrentPath;
 

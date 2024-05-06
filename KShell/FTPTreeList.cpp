@@ -5,7 +5,7 @@
 #pragma execution_character_set("utf-8")
 extern QString g_FTPCurrentPath;
 extern FTPTreeWork * g_FTPTreeWork;
-extern QString g_ProjectRegion, g_DevIP, g_ConnetIP, g_DevPort, g_UserName, g_UserWord, g_UserListNote, g_DevName, g_ProjectName, g_FTPHead;//用于采集登录信息
+extern QString g_ProjectRegion, g_DevIP, g_ConnetIP, g_DevPort, g_UserName, g_UserWord, g_UserListNote, g_FTPType, g_ProjectName, g_FTPHead;//用于采集登录信息
 extern QString g_SSHFTPJzhsDefaultPath;
 extern SSHWindow* g_SSHWindow;//状态窗口的全局指针
 extern bool g_IsSHHTogetherFTP;//ssh ftp窗口是否聚合

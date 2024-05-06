@@ -15,27 +15,13 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QLabel" name="lb_youdaoyun">
-     <property name="text">
-      <string>新设备配置文档</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
     <widget class="QLabel" name="lb_UpdateSoouce">
      <property name="text">
       <string>更新源</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="lb_UseNote">
-     <property name="text">
-      <string>使用说明</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
+   <item row="1" column="1">
     <widget class="QLabel" name="label">
      <property name="text">
       <string>保持对世界的好奇，努力的去了解她</string>

@@ -22,7 +22,7 @@
 #pragma execution_character_set("utf-8")
 
 CConnectionForSshClient *g_SshSocket;//ssh客户端的全局指针
-QString g_ProjectRegion, g_ElecRoomID, g_DevIP, g_N2NIP, g_ConnetIP, g_DevPort, g_UserName, g_UserWord, g_UserListNote, g_DevName, g_DevIndex, g_ProjectName, g_FTPHead;//用于采集登录信息 g_FTPHead:用来区别ftp和sftp
+QString g_ProjectRegion, g_ElecRoomID, g_DevIP, g_N2NIP, g_ConnetIP, g_DevPort, g_UserName, g_UserWord, g_UserListNote, g_FTPType, g_DevIndex, g_ProjectName, g_FTPHead;//用于采集登录信息 g_FTPHead:用来区别ftp和sftp
 //ProStatusSsh* g_ProStatusSsh = NULL;
 QTreeWidgetItem *g_CurrentItem = nullptr;
 int g_ItemRow, g_TopLevelItemRow;//子条目在对应父条目中的位置
@@ -97,7 +97,7 @@ void HomePage::CreatUserListDB()
 		QSqlDatabase::removeDatabase("QSQLITE");
 	}
 	QSqlQuery query(g_UserListDB);
-	query.exec("create table UserList(ProjectRegion text, ProjectName text,ElecRoomID text,DevIndex text,IP text,N2NIP text,Port text,UserName text,PassWord text,DevName text,Note text)");//创建表,如果表存在了，就不创建
+	query.exec("create table UserList(ProjectRegion text, ProjectName text,No1ID text,No2ID text,IP text,N2NIP text,Port text,UserName text,PassWord text,FTPType text,Note text)");//创建表,如果表存在了，就不创建
 	g_UserListDB.close();
 	QSqlDatabase::removeDatabase("QSQLITE");
 }
@@ -398,7 +398,7 @@ void HomePage::slotLoadDBtoUserList()
 }
 
 /*增加指定的用户条目*/
-void HomePage::slotLoadOrderDBtoUserList(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString DevName, QString Note)
+void HomePage::slotLoadOrderDBtoUserList(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString FTPType, QString Note)
 {
 	//目前也是有问题，在不同的地区下，添加同一个相同的项目会出问题——项目会添加到老项目下面。但实际情况下不同的地区，项目名字不一样。
 	//加上后面的这个是因为，当本身就存在这个条目，但是被删除后，又添加回来的时候，如果没有后面的这个条件就会失败，
@@ -413,16 +413,16 @@ void HomePage::slotLoadOrderDBtoUserList(QString ProjectRegion, QString ProjectN
 		m_ProjectName.insert(ProjectName, new QTreeWidgetItem(QStringList() << ProjectName));
 		m_ProjectRegion[ProjectRegion]->addChild(m_ProjectName[ProjectName]);//地区下添加工程
 	}
-	QString CJQuuid = ProjectRegion + ProjectName + ElecRoomID + DevIndex + IP + N2NIP + Port + UserName + PassWord + DevName + Note;
+	QString CJQuuid = ProjectRegion + ProjectName + ElecRoomID + DevIndex + IP + N2NIP + Port + UserName + PassWord + FTPType + Note;
 	if (m_ProjectCJQName.find(CJQuuid) == m_ProjectCJQName.end() || m_ProjectCJQName[CJQuuid] == nullptr)
 	{
-		m_ProjectCJQName.insert(CJQuuid, new QTreeWidgetItem(QStringList() << "  " << ElecRoomID << DevIndex << IP << N2NIP << Port << UserName << PassWord << DevName << Note));
+		m_ProjectCJQName.insert(CJQuuid, new QTreeWidgetItem(QStringList() << "  " << ElecRoomID << DevIndex << IP << N2NIP << Port << UserName << PassWord << FTPType << Note));
 		m_ProjectName[ProjectName]->addChild(m_ProjectCJQName[CJQuuid]);//工程下添加CJQ
 	}
 }
 
 /*修改指定的用户条目*/
-void HomePage::slotModfiedOrderDBtoUserList(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString DevName, QString Note, \
+void HomePage::slotModfiedOrderDBtoUserList(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString FTPType, QString Note, \
 	QString OldProjectRegion, QString OldProjectName, QString OldElecRoomID, QString OldDevIndex, QString OldIP, QString OldN2NIP, QString OldPort, QString OldUserName, QString OldPassWord, QString OldDevName, QString OldNote)
 {
 	QTreeWidgetItem* item = ui.treeWidgetUserList->currentItem();//当前节点
@@ -441,7 +441,7 @@ void HomePage::slotModfiedOrderDBtoUserList(QString ProjectRegion, QString Proje
 		item->setText(5, Port);
 		item->setText(6, UserName);
 		item->setText(7, PassWord);
-		item->setText(8, DevName);
+		item->setText(8, FTPType);
 		item->setText(9, Note);
 
 		m_ProjectRegion[ElecRoomID] = m_ProjectRegion[OldElecRoomID];
@@ -451,7 +451,7 @@ void HomePage::slotModfiedOrderDBtoUserList(QString ProjectRegion, QString Proje
 		m_ProjectRegion[Port] = m_ProjectRegion[OldPort];
 		m_ProjectRegion[UserName] = m_ProjectRegion[OldUserName];
 		m_ProjectRegion[PassWord] = m_ProjectRegion[OldPassWord];
-		m_ProjectRegion[DevName] = m_ProjectRegion[OldDevName];
+		m_ProjectRegion[FTPType] = m_ProjectRegion[OldDevName];
 		m_ProjectRegion[Note] = m_ProjectRegion[OldNote];
 
 		m_ProjectRegion[OldElecRoomID] = nullptr;
@@ -554,8 +554,7 @@ void HomePage::slotAboutMySoftware()
 	\n在基于SSH，SFTP，FTP三大模块基础上，实现了自定义功能开发和使用。\
 	\n部分技术介绍：sqlite3，xml，ini，josn，boost，udp，ssh，ftp，sftp，\
 	\n多线程以及线程池，c++11特性，zlib，protobuf，zip文件解压，qtcore，\
-	\nhttp通讯，动态窗口布局等等\
-	\n\n\n内部使用，请勿外传！");
+	\nhttp通讯，动态窗口布局等等");
 	AboutMySoftware->show();
 }
 
@@ -606,13 +605,13 @@ void HomePage::slotitemDoubleClicked(QTreeWidgetItem * item, int column)
 		g_DevPort = item->text(5);
 		g_UserName = item->text(6);
 		g_UserWord = item->text(7);
-		g_DevName = item->text(8);
+		g_FTPType = item->text(8);
 		g_UserListNote = item->text(9);
-		if (g_DevName == "中嵌")
+		if (g_FTPType == "FTP")
 		{
 			g_FTPHead = "ftp://";//ftp后面必须两个斜杠！！
 		}
-		else if (g_DevName == "集智达" || g_DevName == "华威" || g_DevName == "centos" || g_DevName == "研华")
+		else if (g_FTPType == "SFTP")
 		{
 			g_FTPHead = "sftp://";//sftp斜杠有一个两个无所谓,为了保持统一，多加一个
 		}

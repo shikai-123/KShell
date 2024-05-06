@@ -23,11 +23,8 @@ private:
 	QAction *qa_Guidwindow;
 	QAction *qa_SSHwindow;
 	QAction *qa_FTPwindow;
-	QAction *qa_MonitorData;
 	QAction *qa_Setting;
 	QAction *qa_Help;
-	QAction *qa_ViewModfiyData;
-	QAction *qa_CJQConf;
 	QAction *qa_ReOpen;
 	QMenu   *trayIconMenu;//创建菜单 for 托盘
 

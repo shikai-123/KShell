@@ -9,11 +9,11 @@
         "Num": 5,
         "Size_MB": 1
     },
-    "LastUsedTime": "2024:03:31",
+    "LastUsedTime": "2024:05:06",
     "OtherTools": {
         "Editor": "D:/Notepad++/notepad++.exe"
     },
     "SHHTogetherFTP": true,
-    "SSHFTPJzhsDefaultPath": "/",
+    "SSHFTPJzhsDefaultPath": "/mnt/",
     "SoftSkin": "lightblue.css"
 }

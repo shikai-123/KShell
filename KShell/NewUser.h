@@ -24,10 +24,10 @@ public:
 	void OpenDB();
 signals:
 	void sigDelted();
-	void sigModifed(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString DevName, QString Note, \
+	void sigModifed(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString FTPType, QString Note, \
 		QString OldProjectRegion, QString OldProjectName, QString OldElecRoomID, QString OldDevIndex, QString OldIP, QString OldN2NIP, QString OldPort, QString OldUserName, QString OldPassWord, QString OldDevName, QString OldNote);
 	void sigAddUserItem(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, \
-		QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString DevName, QString Note);
+		QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString FTPType, QString Note);
 
 public slots:
 	void solttest();

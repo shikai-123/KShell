@@ -232,7 +232,7 @@ void UPDate::slotStartUPDate()
 	QString DeletFaultFileList;//删除失败文件列表
 	QFile::remove("./../Update/UpdateList.xml");//保证每次下载都是最新的
 	DownFileList.clear();
-	DownFileList << "https://gitee.com/shikai1995/cjqtool_conf/raw/master/UpdateList.xml";
+	DownFileList << "https://gitee.com/shikai1995/KShellUpdate/raw/master/UpdateList.xml";
 	if (slotUPdateforList(DownFileList) != 0)//下载失败
 	{
 		emit sigUpdateProcess(-1, -1, "升级列表获取失败");

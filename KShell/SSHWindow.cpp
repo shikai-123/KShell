@@ -10,7 +10,7 @@
 #pragma execution_character_set("utf-8")
 extern bool g_bConnectState;
 //extern ProStatusSsh *g_ProStatusSsh;
-extern QString g_ElecRoomID, g_DevIP, g_ConnetIP, g_DevPort, g_UserName, g_UserWord, g_UserListNote, g_DevName, g_DevIndex, g_ProjectName, g_FTPHead;//用于采集登录信息 g_FTPHead:用来区别ftp和sftp
+extern QString g_ElecRoomID, g_DevIP, g_ConnetIP, g_DevPort, g_UserName, g_UserWord, g_UserListNote, g_FTPType, g_DevIndex, g_ProjectName, g_FTPHead;//用于采集登录信息 g_FTPHead:用来区别ftp和sftp
 extern QString g_SSHFTPJzhsDefaultPath;
 QMap<QString, JzagErr> g_JzagErrCSV;//key错误编号 value错误信息
 // mSeconds 毫秒 最大100s

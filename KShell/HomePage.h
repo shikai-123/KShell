@@ -87,9 +87,9 @@ public slots:
 	void slotCmdPing();
 	void slotLoadDBtoUserList();
 	void slotLoadOrderDBtoUserList(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, \
-		QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString DevName, QString Note);
+		QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString FTPType, QString Note);
 
-	void slotModfiedOrderDBtoUserList(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString DevName, QString Note, \
+	void slotModfiedOrderDBtoUserList(QString ProjectRegion, QString ProjectName, QString ElecRoomID, QString DevIndex, QString IP, QString N2NIP, QString Port, QString UserName, QString PassWord, QString FTPType, QString Note, \
 		QString OldProjectRegion, QString OldProjectName, QString OldElecRoomID, QString OldDevIndex, QString OldIP, QString OldN2NIP, QString OldPort, QString OldUserName, QString OldPassWord, QString OldDevName, QString OldNote);
 
 

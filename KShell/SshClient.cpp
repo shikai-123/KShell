@@ -18,7 +18,7 @@
 
 #pragma execution_character_set("utf-8")
 
-extern QString DevIP, DevPort, DevName, DevWord;//用于采集登录信息
+extern QString DevIP, DevPort, FTPType, DevWord;//用于采集登录信息
 
 
 CConnectionForSshClient::CConnectionForSshClient()
