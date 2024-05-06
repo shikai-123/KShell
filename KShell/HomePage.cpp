@@ -18,7 +18,6 @@
 #include "FTPTreeList.h"
 #include "FTPTreeWork.h"
 #include "UPDate.h"
-#include "CJQConf.h"
 #pragma execution_character_set("utf-8")
 
 CConnectionForSshClient *g_SshSocket;//ssh客户端的全局指针
@@ -39,10 +38,8 @@ extern QMap<QString, QString> g_ProjectNameCSV;//key工程名 value项目编号
 extern void Delay(int mSeconds);
 extern LogSetting g_LogSetting;
 extern OtherToolsSetting g_OtherToolsSetting;
-extern CheckProSetting g_CheckProSetting;
-extern DataMonitSetting g_DataMonitSetting;
 extern FontSetting g_FontSetting;
-extern QString g_SSHFTPJzhsDefaultPath;//jzhs默认目录
+extern QString g_SSHFTPDefaultPath;//默认目录
 extern bool g_IsSHHTogetherFTP;//SHH,FTP窗口是否聚合
 extern QString g_LastUsedTime;//软件最后一次打开时间for自动更新检测
 extern bool g_ISUpDate;

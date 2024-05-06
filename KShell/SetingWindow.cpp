@@ -11,10 +11,8 @@
 
 extern LogSetting g_LogSetting;
 extern OtherToolsSetting g_OtherToolsSetting;
-extern CheckProSetting g_CheckProSetting;
-extern DataMonitSetting g_DataMonitSetting;
 extern FontSetting g_FontSetting;
-extern QString g_SSHFTPJzhsDefaultPath;
+extern QString g_SSHFTPDefaultPath;
 extern QString g_LastUsedTime;
 extern bool g_IsSHHTogetherFTP;
 extern QJsonObject g_jsonObject;
@@ -59,7 +57,7 @@ void SetingWindow::slotWriteJson()
 	/*一些检查*/
 	if (ui.le_FTPSSHDeflautPath->text().endsWith("/") == false || ui.le_FTPSSHDeflautPath->text().startsWith("/") == false)
 	{
-		QMessageBox::critical(this, "ERR", "jzhs路径不是以“/”开头或结束");
+		QMessageBox::critical(this, "ERR", "默认路径不是以“/”开头或结束");
 		return;
 	}
 
@@ -78,7 +76,7 @@ void SetingWindow::slotWriteJson()
 	Font_obj.insert("FontType", ui.cb_FontType->currentText());
 
 	QJsonObject Json;
-	Json.insert("SSHFTPJzhsDefaultPath", ui.le_FTPSSHDeflautPath->text());
+	Json.insert("SSHFTPDefaultPath", ui.le_FTPSSHDeflautPath->text());
 	Json.insert("LastUsedTime", g_LastUsedTime);
 	Json.insert("SHHTogetherFTP", bool(ui.cb_IsSHHTogetherFTP->isChecked()));//!!因为是bool量，所以只能转到bool，在json中为false或者ture。 0或者1是读不到的
 	Json.insert("LOG", LOG_obj);
@@ -124,7 +122,7 @@ void SetingWindow::slotOpenConfJson()
 /*把从CONF.json读取到的数据，显示在窗口上*/
 void SetingWindow::LoadData()
 {
-	ui.le_FTPSSHDeflautPath->setText(g_SSHFTPJzhsDefaultPath);
+	ui.le_FTPSSHDeflautPath->setText(g_SSHFTPDefaultPath);
 	ui.cb_IsSHHTogetherFTP->setChecked(g_IsSHHTogetherFTP);
 
 	ui.cb_OpenLog->setChecked(g_LogSetting.Enable);

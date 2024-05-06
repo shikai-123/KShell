@@ -1,12 +1,11 @@
 ﻿#include "FTPTreeList.h"
 #include "FTPTreeWork.h"
 #include "SSHWindow.h" 
-#include "CJQConf.h"
 #pragma execution_character_set("utf-8")
 extern QString g_FTPCurrentPath;
 extern FTPTreeWork * g_FTPTreeWork;
 extern QString g_ProjectRegion, g_DevIP, g_ConnetIP, g_DevPort, g_UserName, g_UserWord, g_UserListNote, g_FTPType, g_ProjectName, g_FTPHead;//用于采集登录信息
-extern QString g_SSHFTPJzhsDefaultPath;
+extern QString g_SSHFTPDefaultPath;
 extern SSHWindow* g_SSHWindow;//状态窗口的全局指针
 extern bool g_IsSHHTogetherFTP;//ssh ftp窗口是否聚合
 extern void Delay(int mSeconds);
@@ -589,7 +588,7 @@ void FTPTreeList::slotRK_FTPHome_Connect()
 		return;
 	}
 	qtw_FTPListWidget->clear();
-	g_FTPCurrentPath = g_FTPHead + g_ConnetIP + "/" + g_SSHFTPJzhsDefaultPath;
+	g_FTPCurrentPath = g_FTPHead + g_ConnetIP + "/" + g_SSHFTPDefaultPath;
 	emit sigGetFTPList(g_FTPCurrentPath);
 	this->setWindowTitle(g_FTPCurrentPath);
 	FTPTreeList::FTPOnce = false;
@@ -626,7 +625,7 @@ void FTPTreeList::slotRK_FTPFreshList()
 void FTPTreeList::slotRK_FTPDown()
 {
 	qDebug() << qtw_FTPListWidget->currentItem()->text(0);
-	QString DownPath = "/" + g_FTPCurrentPath.section("/", 4); // /mnt/nandflash/jzhs/conf/
+	QString DownPath = "/" + g_FTPCurrentPath.section("/", 4);
 
 	if (qtw_FTPListWidget->currentItem()->text(0) == "." || qtw_FTPListWidget->currentItem()->text(0) == "..")
 	{
@@ -657,7 +656,7 @@ void FTPTreeList::slotRK_FTPDown()
 void FTPTreeList::slotRK_FTPDownToLeftDir()
 {
 	qDebug() << qtw_FTPListWidget->currentItem()->text(0);
-	QString DownPath = "/" + g_FTPCurrentPath.section("/", 4); // /mnt/nandflash/jzhs/conf/
+	QString DownPath = "/" + g_FTPCurrentPath.section("/", 4);
 	QModelIndex index = qtv_LocalFileTree->currentIndex();
 	QString DirFath;
 	if (m_FileMode->isDir(index))
@@ -881,8 +880,8 @@ void FTPTreeList::slotRK_FTPDelet()
 		return;
 	}
 	static std::string SCMD = "";
-	//sftp:/192.168.6.38/mnt/nandflash/jzhs/conf/
-	QString DeletPath = "/" + g_FTPCurrentPath.section("/", 4); // /mnt/nandflash/jzhs/conf/
+	//sftp:/192.168.6.38/mnt/nandflash
+	QString DeletPath = "/" + g_FTPCurrentPath.section("/", 4);
 	QString QCMD = "";
 	if (qtw_FTPListWidget->currentItem()->text(4).at(0) == "-")
 	{
@@ -957,8 +956,8 @@ void FTPTreeList::slotRK_FTPAddPermission()
 {
 	qDebug() << "增加执行权限";
 	static std::string SCMD = "";
-	QString ChmodPath = "/" + g_FTPCurrentPath.section("/", 4); // /mnt/nandflash/jzhs/
-	//QString QCMD ="chmod 777 /mnt/nandflash/jzhs/logo.png";
+	QString ChmodPath = "/" + g_FTPCurrentPath.section("/", 4);
+	//QString QCMD ="chmod 777 /mnt/nandflash/xxxx";
 	QString QCMD;
 	if (g_FTPHead == "sftp://")
 	{
@@ -1311,7 +1310,7 @@ void FTPTreeList::slotOpenFTPWindows()
 		//return;
 	}
 
-	g_FTPCurrentPath = g_FTPHead + g_ConnetIP + "/" + g_SSHFTPJzhsDefaultPath;//!!在ip后面加/，是因为ftp不加，库报错，但是sftp加不加无所谓
+	g_FTPCurrentPath = g_FTPHead + g_ConnetIP + "/" + g_SSHFTPDefaultPath;//!!在ip后面加/，是因为ftp不加，库报错，但是sftp加不加无所谓
 	emit sigClearFileList();//每次打开服务区文件列表之前 首先清空一下
 	this->showNormal();//最小化也能显示出来
 	this->raise();//显示到最前面

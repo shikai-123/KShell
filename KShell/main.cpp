@@ -9,7 +9,6 @@
 #include "FTPTreeWork.h"
 #include "UPDate.h"
 #include <qtimer.h>
-#include "CJQConf.h"
 #pragma execution_character_set("utf-8")
 
 NewUser* g_NewUser = NULL;
@@ -24,10 +23,8 @@ UPDate * g_UPDate = nullptr;
 
 LogSetting g_LogSetting;
 OtherToolsSetting g_OtherToolsSetting;
-CheckProSetting g_CheckProSetting;
-DataMonitSetting g_DataMonitSetting;
 FontSetting g_FontSetting;
-QString g_SSHFTPJzhsDefaultPath;//jzhs默认目录
+QString g_SSHFTPDefaultPath;//默认目录
 bool g_IsSHHTogetherFTP;//SHH,FTP窗口是否聚合
 QString g_LastUsedTime;//软件最后一次打开时间for自动更新检测
 bool g_ISUpDate = false;
@@ -138,7 +135,7 @@ void LoadConf()
 	ConfError(parseJsonErr);
 	QJsonObject jsonObject = g_jsonObject = document.object();
 	//qDebug() << "jsonObject[name]==" << jsonObject["Author"].toString();
-	g_SSHFTPJzhsDefaultPath = jsonObject["SSHFTPJzhsDefaultPath"].toString();
+	g_SSHFTPDefaultPath = jsonObject["SSHFTPDefaultPath"].toString();
 	g_IsSHHTogetherFTP = jsonObject["SHHTogetherFTP"].toBool();
 
 	QJsonValue jsonValueList = jsonObject.value(QStringLiteral("LOG"));
@@ -152,14 +149,8 @@ void LoadConf()
 	item = jsonValueList.toObject();
 	g_OtherToolsSetting.Editor = item["Editor"].toString();
 
-	jsonValueList = jsonObject.value(QStringLiteral("CheckPro"));
-	item = jsonValueList.toObject();
-	g_CheckProSetting.Enable = item["Enable"].toInt();
-	g_CheckProSetting.Time_S = item["Time_S"].toInt();
 
-	jsonValueList = jsonObject.value(QStringLiteral("DataMonit"));
-	item = jsonValueList.toObject();
-	g_DataMonitSetting.Time_S = item["Time_S"].toInt();
+
 
 	jsonValueList = jsonObject.value(QStringLiteral("Font"));
 	item = jsonValueList.toObject();

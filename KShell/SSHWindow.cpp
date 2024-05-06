@@ -11,8 +11,7 @@
 extern bool g_bConnectState;
 //extern ProStatusSsh *g_ProStatusSsh;
 extern QString g_ElecRoomID, g_DevIP, g_ConnetIP, g_DevPort, g_UserName, g_UserWord, g_UserListNote, g_FTPType, g_DevIndex, g_ProjectName, g_FTPHead;//用于采集登录信息 g_FTPHead:用来区别ftp和sftp
-extern QString g_SSHFTPJzhsDefaultPath;
-QMap<QString, JzagErr> g_JzagErrCSV;//key错误编号 value错误信息
+extern QString g_SSHFTPDefaultPath;
 // mSeconds 毫秒 最大100s
 void Delay(int mSeconds)
 {
@@ -29,8 +28,6 @@ SSHWindow::SSHWindow(QWidget *parent)
 	ui.setupUi(this);
 	Init();
 	connect(this, SIGNAL(sigSshSendERR(int)), this, SLOT(slotSshSendERR(int)));
-	connect(this, &SSHWindow::sigJzagErrmsg, this, &SSHWindow::slotPraseJzagErrMsg);
-	connect(this, &SSHWindow::sigStartJzag, this, &SSHWindow::slotClearJzagErrTab);
 }
 
 SSHWindow::~SSHWindow()
@@ -425,58 +422,7 @@ void SSHWindow::slotCreatCMDToDB()
 	}
 }
 
-/*处理Jzag错误信息，填充到错误信息表格中*/
-void SSHWindow::slotPraseJzagErrMsg(QString Err)
-{
-	//qDebug() << Err;//[20220805 16:31:14-ERROR] E10048:3 mbs reg=256 chid=0 link=27
-	//return;
-	int Pos = Err.indexOf("ERROR", 1);
-	//有时候有可能是err和info信息一块过来
-	QString ErrNum = Err.mid(Pos + 6, Err.indexOf(":", Pos) - Pos - 6);
-	Err = Err.mid(Err.indexOf(":", Pos) + 1);//错误信息，去掉时间和错误号
-	ErrNum = ErrNum.simplified();//去掉收尾空格
-	if (!g_JzagErrCSV[ErrNum].IsAdd)
-	{
-		m_itemList.clear();
-		if (g_JzagErrCSV[ErrNum].IsRepeatInfo)//如果是重复数据，就得每次去添加
-		{
-			if (!g_JzagErrCSV[ErrNum].RepeatErrInfo.contains(Err))//如果这条错误已经被记录了，就不会再次添加的表格中
-			{
-				//qDebug() << "重复错误信息，添加  " << Err;
-				m_itemList.append(new QStandardItem(ErrNum));
-				m_itemList.append(new QStandardItem(Err));
-				m_itemList.append(new QStandardItem(g_JzagErrCSV[ErrNum].Solution));
-				m_itemList.append(new QStandardItem(g_JzagErrCSV[ErrNum].Note));
-				m_itemList.append(new QStandardItem(g_JzagErrCSV[ErrNum].FucSection));
-				m_JzagErrItemModel->appendRow(m_itemList);
-				g_JzagErrCSV[ErrNum].RepeatErrInfo << Err;//如果是需要重复的错误信息，把信息添加到重复信息列表中
 
-			}
-		}
-		else
-		{
-			m_itemList.append(new QStandardItem(ErrNum));
-			m_itemList.append(new QStandardItem(Err));
-			m_itemList.append(new QStandardItem(g_JzagErrCSV[ErrNum].Solution));
-			m_itemList.append(new QStandardItem(g_JzagErrCSV[ErrNum].Note));
-			m_itemList.append(new QStandardItem(g_JzagErrCSV[ErrNum].FucSection));
-			m_JzagErrItemModel->appendRow(m_itemList);
-			g_JzagErrCSV[ErrNum].IsAdd = true;
-		}
-	}
-}
-
-/*清空jzag错误信息表格*/
-void SSHWindow::slotClearJzagErrTab()
-{
-	m_JzagErrItemModel->clear();
-	for (QMap<QString, JzagErr>::iterator it = g_JzagErrCSV.begin(); it != g_JzagErrCSV.end(); it++)
-	{
-		it->IsAdd = false;
-		it->RepeatErrInfo.clear();
-	}
-	m_JzagErrItemModel->setHorizontalHeaderLabels(QStringList() << "错误号" << "错误信息" << "解决办法" << "解释" << "功能");
-}
 
 /*删除Tab窗口*/
 void SSHWindow::slotCloseTab(int SSHIndex)
@@ -526,8 +472,8 @@ void SSHWindow::slotDataArrived(QString strMsg, QString strIp, int nPort, int SS
 	/*下面对于数据处理，看起来是很复杂，并且没有必要，但实际上是有很多必要的
 	据我观察，QSSH库给我数据分三种，
 	纯\r\n ，
-	以#结束的如“root@EC2022BR:/mnt/nandflash/jzhs/bin# ”，还
-	有就是最正常的以\r\n 结尾的cd /mnt/nandflash/jzhs/bin\\r\\n\"
+	以#结束的如“root@EC2022BR:/mnt/nandflash/xxxx/bin# ”，还
+	有就是最正常的以\r\n 结尾的cd /mnt/nandflash/xxxx/bin\\r\\n\"
 	还有上次没有发\r\n这次开头就发
 	如果不做处理的话，就会造成数据分散。比如一个句子，QSSH会打散发过来。所以需要处理。
 	还有一种情况，不同的句子之前会出现很多的换行，这是因为QSSH发给你的句子中，已经有了换行符（可能是系统给你添加的），然后还给你发送一个换行符。 这样就会造成多个换行
@@ -550,10 +496,6 @@ void SSHWindow::slotDataArrived(QString strMsg, QString strIp, int nPort, int SS
 		}
 		qe_SSHText[SSHIndex]->append(SHHTextList[i]);//#文本追加（不管光标位置)
 		qe_SSHText[SSHIndex]->moveCursor(QTextCursor::End);//移动光标到结尾
-		if (SSHRecStr.contains("ERROR"))//!!判断err第一次出现的位置
-		{
-			emit sigJzagErrmsg(SSHRecStr);
-		}
 	}
 	SSHRecStr.clear();
 	SHHTextList.clear();
@@ -615,11 +557,7 @@ void SSHWindow::slotTableClicked(const QModelIndex &index)
 
 	qDebug() << "CMD表格被调用 " << m_CurrentSSHIndex;
 	if (m_bConnectState.size() > m_CurrentSSHIndex && m_bConnectState[m_CurrentSSHIndex]) {
-		if (m_CMD == "./jzag")
-		{
-			emit sigStartJzag();
-		}
-		else if (m_CMD == "ls" || m_CMD == "ls -l")
+		if (m_CMD == "ls" || m_CMD == "ls -l")
 		{
 			m_CMD = m_CMD + " --color=never";
 		}

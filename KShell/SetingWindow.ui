@@ -16,7 +16,7 @@
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>9</x>
@@ -160,7 +160,7 @@
       <property name="title">
        <string>字体(待开发)</string>
       </property>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="layoutWidget1">
        <property name="geometry">
         <rect>
          <x>11</x>
@@ -243,7 +243,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>FTP、SSH Jzhs默认目录(必须以/开头、结尾)</string>
+         <string>FTP、SSH默认目录(必须以/开头、结尾)</string>
         </property>
        </widget>
       </item>

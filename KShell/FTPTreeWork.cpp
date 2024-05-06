@@ -2,7 +2,6 @@
 #include "FTPTreeWork.h"
 #include "FTPTreeList.h"
 #include "DataStruck.h"
-#include "CJQConf.h"
 extern FTPTreeWork * g_FTPTreeWork;
 extern FTPTreeList * g_FTPTreeList;
 extern QString g_DevIP, g_DevPort, g_ConnetIP, g_UserName, g_UserWord, g_UserListNote, g_FTPType, g_ProjectName, g_FTPHead;//用于采集登录信息
@@ -408,10 +407,10 @@ int FTPTreeWork::slotGetFTPList(QString Path)
 {
 	curl_easy_setopt(curl, CURLOPT_NOBODY, 0);//0 文件列表能输出 反之不输出
 	//!!!获取文件列表的代码和下载文件的代码几乎一致 但是用来区分是获取列表还是下载文件 就看你的路径是个文件路径还是目录路径
-	curl_easy_setopt(curl, CURLOPT_URL, Path.toStdString().c_str());//sftp://192.168.100.249/mnt/nandflash/jzhs/  
-	//curl_easy_setopt(curl, CURLOPT_URL, "ftp://127.0.0.1//C:\\bin\\");//sftp://192.168.100.249/mnt/nandflash/jzhs/  
-	//curl_easy_setopt(curl, CURLOPT_URL,"ftp://192.168.100.249//mnt/nandflash/jzhs/bin/");//ftp://192.168.100.249//mnt/nandflash/jzhs/!!ip前后都得加个斜杠
-	//curl_easy_setopt(curl, CURLOPT_URL,"ftp://192.168.100.249//mnt/nandflash/jzhs/sdata/Release/qmake/123/");
+	curl_easy_setopt(curl, CURLOPT_URL, Path.toStdString().c_str());//sftp://192.168.100.249/mnt/nandflash/xxxx/  
+	//curl_easy_setopt(curl, CURLOPT_URL, "ftp://127.0.0.1//C:\\bin\\");//sftp://192.168.100.249/mnt/nandflash/xxxx/  
+	//curl_easy_setopt(curl, CURLOPT_URL,"ftp://192.168.100.249//mnt/nandflash/xxxx/bin/");//ftp://192.168.100.249//mnt/nandflash/xxxx/!!ip前后都得加个斜杠
+	//curl_easy_setopt(curl, CURLOPT_URL,"ftp://192.168.100.249//mnt/nandflash/xxxx/sdata/Release/qmake/123/");
 	//curl_easy_setopt(curl, CURLOPT_URL,"scp://192.168.100.249//mnt/");//scp://<my_host>:<my_port>
 	QString UsrPass = g_UserName + ":" + g_UserWord;
 	/*user & pwd*/
@@ -448,7 +447,7 @@ int FTPTreeWork::slotGetFTPList(QString Path)
 /*递归-删除文件夹--目前来说支持空，非空，多级文件夹删除---支持SFTP和FTP，对于ftp而言，这个库不能够显示隐藏文件，所以导致删除有很大的问题*/
 void FTPTreeWork::slotFTPDeletDir(QString Path)
 {
-	//"sftp://192.168.6.38//mnt/nandflash/jzhs/confy/"
+	//"sftp://192.168.6.38//mnt/nandflash/xxxx/confy/"
 	QString DeletCmdHead;
 	if (g_FTPHead == "sftp://")
 	{
@@ -467,7 +466,7 @@ void FTPTreeWork::slotFTPDeletDir(QString Path)
 	}
 	int ret = 0;
 	TempDeletDirPath.clear();
-	TempDeletDirPath = "/" + Path.section("/", 4);// /mnt/nandflash/jzhs/confy/
+	TempDeletDirPath = "/" + Path.section("/", 4);// /mnt/nandflash/xxxx/confy/
 	qDebug() << "文件夹 - 递归删除 - 开始";
 	curl_easy_setopt(curl, CURLOPT_URL, Path.toStdString().c_str());
 	curl_easy_setopt(curl, CURLOPT_NOBODY, 0);//0 文件列表能输出 反之不输出
@@ -572,7 +571,7 @@ void FTPTreeWork::slotFTPDeletDir(QString Path)
 }
 
 /*递归-下载文件夹--目前来说支持空，非空，多级文件夹下载*/
-void FTPTreeWork::slotFTPDownDir(QString RemotePath, QString TargetPath)//sftp:/192.168.6.38/mnt/nandflash/jzhs/Release/
+void FTPTreeWork::slotFTPDownDir(QString RemotePath, QString TargetPath)//sftp:/192.168.6.38/mnt/nandflash/xxxx/Release/
 {
 	int ret = 0;
 	emit sigFTPStatusAlarm(1);//打开“勿操作”对话框
@@ -587,7 +586,7 @@ void FTPTreeWork::slotFTPDownDir(QString RemotePath, QString TargetPath)//sftp:/
 	}
 	DownDirList.clear();
 	DownFileList.clear();
-	TempDownDirPath = "/" + RemotePath.section("/", 4);// /mnt/nandflash/jzhs/Release/
+	TempDownDirPath = "/" + RemotePath.section("/", 4);// /mnt/nandflash/xxxx/Release/
 	qDebug() << "文件夹 - 递归下载 - 开始";
 	curl_easy_setopt(curl, CURLOPT_URL, RemotePath.toStdString().c_str());
 	curl_easy_setopt(curl, CURLOPT_NOBODY, 0);
@@ -630,7 +629,7 @@ void FTPTreeWork::slotFTPDownDir(QString RemotePath, QString TargetPath)//sftp:/
 	}
 	for (size_t FileIndex = 0; FileIndex < DownFileList.size(); FileIndex++)//下载文件
 	{
-		//qDebug() << "下载文件 " << "../Download/" + DownFileList[FileIndex].mid(DownFileList[FileIndex].indexOf(CurrentDirName));//sftp://192.168.6.38//mnt/nandflash/jzhs/Release/1/11/a.c
+		//qDebug() << "下载文件 " << "../Download/" + DownFileList[FileIndex].mid(DownFileList[FileIndex].indexOf(CurrentDirName));//sftp://192.168.6.38//mnt/nandflash/xxxx/Release/1/11/a.c
 		emit sigUPorDownProcessMsg(DownFileList[FileIndex].mid(DownFileList[FileIndex].indexOf(CurrentDirName)));
 		if (ret = slotFtpGetFile(DownFileList[FileIndex], g_UserName, g_UserWord, TargetPath + "/" + DownFileList[FileIndex].mid(DownFileList[FileIndex].indexOf(CurrentDirName)), false, true, false, false) != 0)
 		{

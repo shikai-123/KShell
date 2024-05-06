@@ -37,7 +37,7 @@
         <number>-1</number>
        </property>
       </widget>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="layoutWidget1">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QLabel" name="label">

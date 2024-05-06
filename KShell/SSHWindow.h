@@ -48,7 +48,6 @@ public:
 	QSqlDatabase m_CMDListDB;
 	//表格
 	QStandardItemModel* m_CMDItemModel;
-	QStandardItemModel* m_JzagErrItemModel;
 	QList<QStandardItem *> m_itemList;
 	QLineEdit* le_CMD;
 	QLineEdit* le_CMDText;
@@ -90,16 +89,11 @@ public slots:
 	void slotTableClicked(const QModelIndex &index);//左击
 	void slotTablePress(const QModelIndex &index);//点击
 	void slotCreatCMDToDB();
-	void slotPraseJzagErrMsg(QString Err);
-	void slotClearJzagErrTab();
 
 signals:
 	void sigtest();
-	void sigRefrshJzagVer();
 	void sigSend(QString strMsg);//包含命令内容的信号
 	void sigSshSendERR(int Err);
 	void sigDisconnected();
 	void sigCreateConnection();
-	void sigJzagErrmsg(QString Err);
-	void sigStartJzag();
 };
