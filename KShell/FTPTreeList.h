@@ -40,11 +40,7 @@ public:
 	QVBoxLayout* vbl_AllFtpLayout;//总FTP窗口布局
 	QTreeWidget* qtw_FTPListWidget;
 	QProgressBar* qpb_DownPro;
-	QLineEdit* qe_NewFile;
-	QLineEdit* qe_RenameFile;
-	QMessageBox* qmb_NewFileWidget;
 	QMessageBox* qmb_FTPStatusAlarm;
-	QMessageBox* qmb_RenameWidget;
 	QStringList LocalFileList;
 	QStringList LocalDirList;
 	QIcon qic_FileIcon;

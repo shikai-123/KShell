@@ -85,15 +85,7 @@ void FTPTreeList::Init()
 	/*“过程窗口”初始化*/
 	MessageInit();
 
-	/*新建文件、文件夹窗口  自定义 QMessageBox */
-	qe_NewFile = new QLineEdit(this);
-	qmb_NewFileWidget = new QMessageBox(QMessageBox::Information, "新建", "", QMessageBox::Ok | QMessageBox::Cancel, this);
-	dynamic_cast<QGridLayout *>(qmb_NewFileWidget->layout())->addWidget(qe_NewFile, 0, 1, 1, 2);//!!!!学习
 
-	/*重命名文件 自定义QMessageBox*/
-	qe_RenameFile = new QLineEdit(this);
-	qmb_RenameWidget = new QMessageBox(QMessageBox::Information, "重命名", "", QMessageBox::Ok | QMessageBox::Cancel, this);
-	dynamic_cast<QGridLayout *>(qmb_RenameWidget->layout())->addWidget(qe_RenameFile, 0, 1, 1, 2);
 	connect(this, SIGNAL(sigClearFileList()), this, SLOT(slotClearFileList()));//每次打开文件列表 都会清空一次
 
 	/*文件监视*/
@@ -859,21 +851,22 @@ void FTPTreeList::slotRK_FTPUPDir()
 /*FTP右键重命名文件、文件夹*/
 void FTPTreeList::slotRK_FTPReName()
 {
-	qe_RenameFile->setText(qtw_FTPListWidget->currentItem()->text(0));
-	if (qmb_RenameWidget->exec() == QMessageBox::Ok) {
-		qDebug() << "重命名";
+	//输入字符串
+	QString dlgTitle = "重命名";
+	QString txtLabel = "请输入文件名";
+	QString defaultInput = qtw_FTPListWidget->currentItem()->text(0);
+	QLineEdit::EchoMode echoMode = QLineEdit::Normal;
+	bool ok = false;
+	QString text = QInputDialog::getText(this, dlgTitle, txtLabel, echoMode, defaultInput, &ok);
+	if (ok && !text.isEmpty()) {
 		static std::string SCMD = "";
-		QString RenamePath = "/" + g_FTPCurrentPath.section("/", 4); // /mnt/nandflash/jzhs/conf/
+		QString RenamePath = "/" + g_FTPCurrentPath.section("/", 4);
 		QString QCMD = "";
 		if (g_FTPHead == "sftp://")
-		{
-			QCMD = "rename " + RenamePath + qtw_FTPListWidget->currentItem()->text(0) + " " + RenamePath + qe_RenameFile->text();
-		}
+			QCMD = "rename " + RenamePath + qtw_FTPListWidget->currentItem()->text(0) + " " + RenamePath + text;
 		else if (g_FTPHead == "ftp://")
-		{
-			QCMD = "RNFR " + qtw_FTPListWidget->currentItem()->text(0) + "RNTO " + qe_RenameFile->text();//ftp的重命名不需要太多的路径
-		}
-		//qDebug() << QCMD;
+			QCMD = "RNFR " + qtw_FTPListWidget->currentItem()->text(0) + "RNTO " + text;//ftp的重命名不需要太多的路径
+
 		SCMD = QCMD.toStdString();
 		emit sigFTPCMD(SCMD.c_str());
 	}
@@ -916,7 +909,6 @@ void FTPTreeList::slotRK_FTPDelet()
 		}
 		else if (g_FTPHead == "ftp://")
 		{
-			//RMD 
 			emit sigFTPCMDDeletDir(g_FTPHead + g_ConnetIP + "/" + DeletPath + qtw_FTPListWidget->currentItem()->text(0) + "/");
 		}
 	}
@@ -934,21 +926,25 @@ void FTPTreeList::slotRK_FTPDelet()
 /*FTP右键新建文件夹*/
 void FTPTreeList::slotRK_FTPNewDir()
 {
-	qe_NewFile->setText("");
-	if (qmb_NewFileWidget->exec() == QMessageBox::Ok) {
+	//输入字符串
+	QString dlgTitle = "新建文件夹";
+	QString txtLabel = "请输入文件夹名";
+	QString defaultInput = "新建文件夹";
+	QLineEdit::EchoMode echoMode = QLineEdit::Normal;
+	bool ok = false;
+	QString text = QInputDialog::getText(this, dlgTitle, txtLabel, echoMode, defaultInput, &ok);
+	if (ok && !text.isEmpty()) {
 		static std::string SCMD = "";// 和上面的 static std::string SCMD  两者储存在不同的内存
 		qDebug() << "新建文件夹";
 		QString QCMD = "";
 		if (g_FTPHead == "sftp://")
 		{
 			QString DirPath = "/" + g_FTPCurrentPath.section("/", 3);
-			QCMD = "mkdir " + DirPath + qe_NewFile->text();//!!!mkdir不支持参数 他创建的文件夹drwxr-xr-x 没有x
+			QCMD = "mkdir " + DirPath + text;//!!!mkdir不支持参数 他创建的文件夹drwxr-xr-x 没有x
 			//QCMD = "mkdir " + (QString)"/mnt/" + qe_NewFile->text();
 		}
 		else if (g_FTPHead == "ftp://")
-		{
-			QCMD = "MKD " + qe_NewFile->text();
-		}
+			QCMD = "MKD " + text;
 
 		qDebug() << QCMD;
 		SCMD = QCMD.toStdString();
