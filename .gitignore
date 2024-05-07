@@ -3,14 +3,17 @@
 ################################################################################
 
 /.vs
-/Debug
-/KShell/.vs/KShell/v15
 /KShell/Debug/KShell.tlog
-/KShell/Debug/moc
 /KShell/Debug/qmake
-/KShell/Debug/rcc
-/KShell/Debug/uic
 /KShell/Debug
-/log
-/Project/测试区/工位采集器/192.168.100.249
+/KShell/conf/CONF.json
+/Project
 /Temp
+/log
+/Debug/KShell.exe
+/Debug/KShell.ilk
+/Debug/KShell.pdb
+/KShell/.vs/KShell/v15/.suo
+/KShell/KShell.vcxproj
+/KShell/KShell.vcxproj.user
+/Project/北京/1/192.168.78.128

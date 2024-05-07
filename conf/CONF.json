@@ -1,0 +1,19 @@
+{
+    "Font": {
+        "FontType": "",
+        "Fontsize": 4
+    },
+    "LOG": {
+        "Enable": 1,
+        "LogLevel": 0,
+        "Num": 5,
+        "Size_MB": 1
+    },
+    "LastUsedTime": "2024:05:06",
+    "OtherTools": {
+        "Editor": "C:/Program Files/Notepad++/notepad++.exe"
+    },
+    "SHHTogetherFTP": true,
+    "SSHFTPJzhsDefaultPath": "/mnt/",
+    "SoftSkin": "lightblue.css"
+}
