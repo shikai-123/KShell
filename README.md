@@ -7,7 +7,11 @@
     <img src="https://img.shields.io/badge/C%2B%2B-11-8A2BE2">
     <img src="https://img.shields.io/badge/release-1.0-8A2BE2">
 
-</div>
+</div>  
+
+# 视频介绍 
+
+[视频](https://www.bilibili.com/video/BV1ai421v76n/)  
 
 
 # 🚀 关于Kshell
