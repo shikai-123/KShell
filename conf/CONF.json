@@ -1,4 +1,11 @@
 {
+    "CheckPro": {
+        "Enable": 1,
+        "Time_S": 5
+    },
+    "DataMonit": {
+        "Time_S": 5
+    },
     "Font": {
         "FontType": "",
         "Fontsize": 4
@@ -9,11 +16,17 @@
         "Num": 5,
         "Size_MB": 1
     },
-    "LastUsedTime": "2024:05:06",
+    "LastUsedTime": "2024:06:02",
+    "N2NIPSec": "",
     "OtherTools": {
-        "Editor": "C:/Program Files/Notepad++/notepad++.exe"
+        "Editor": "",
+        "FTP": "",
+        "OtherTool": "",
+        "SSH": "",
+        "ToolForCJQ": ""
     },
-    "SHHTogetherFTP": true,
-    "SSHFTPJzhsDefaultPath": "/mnt/",
-    "SoftSkin": "lightblue.css"
+    "SHHTogetherFTP": false,
+    "SSHFTPDefaultPath": null,
+    "SSHFTPJzhsDefaultPath": "/mnt/nandflash/jzhs/",
+    "SoftSkin": "blacksoft.css"
 }

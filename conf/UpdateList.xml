@@ -3,33 +3,23 @@
 <filelist>
     <file name="README.md">
 		<version>1.0</version> 
-		<remotepath>https://gitee.com/shikai1995/cjqtool_conf/raw/master/README.md</remotepath>
+		<remotepath>https://gitee.com/shikai1995/KShellUpdate/raw/master/README.md</remotepath>
 		<loaclpath>./../Update/</loaclpath>
 	</file>
     <file name="CMDList.db">
 		<version>1.0</version> 
-		<remotepath>https://gitee.com/shikai1995/cjqtool_conf/raw/master/CMDList.db</remotepath>
+		<remotepath>https://gitee.com/shikai1995/KShellUpdate/raw/master/CMDList.db</remotepath>
 		<loaclpath>./../conf/</loaclpath>
 	</file>
     <file name="CONF.json">
 		<version>1.1</version> 
-		<remotepath>https://gitee.com/shikai1995/cjqtool_conf/raw/master/CONF.json</remotepath>
+		<remotepath>https://gitee.com/shikai1995/KShellUpdate/raw/master/CONF.json</remotepath>
 		<loaclpath>./../conf/</loaclpath>
 	</file>
     <file name="CJQTool.exe">
 		<version>1.39</version> 
-		<remotepath>https://gitee.com/shikai1995/cjqtool_conf/raw/master/CJQTool.zip</remotepath>
-		<loaclpath>./../CJQTool/</loaclpath>
-	</file>
-    <file name="JzagErr.csv">
-		<version>1.0</version> 
-		<remotepath>https://gitee.com/shikai1995/cjqtool_conf/raw/master/JzagErr.csv</remotepath>
-		<loaclpath>./../conf/</loaclpath>
-	</file>
-    <file name="Jzag-Modbus数据解析类型说明.docx">
-		<version>1.3</version> 
-		<remotepath>https://gitee.com/shikai1995/cjqtool_conf/raw/master/Jzag-Modbus数据解析类型说明.docx</remotepath>
-		<loaclpath>./../Tools/</loaclpath>
+		<remotepath>https://gitee.com/shikai1995/KShellUpdate/raw/master/CJQTool.zip</remotepath>
+		<loaclpath>./../ KShell/</loaclpath>
 	</file>
    
 </filelist>
