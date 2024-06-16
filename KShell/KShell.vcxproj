@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C65F889F-C16F-4E48-9FDA-BACE6FF390D3}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">10.0.17763.0</WindowsTargetPlatformVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <ProjectName>KShell</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
+    <QtInstall>5.14.2_msvc2017</QtInstall>
+    <QtModules>core;xml;sql;network;gui;widgets</QtModules>
+    <QtBuildConfig>debug</QtBuildConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="QtSettings">
+    <QtInstall>5.14.2_msvc2017</QtInstall>
+    <QtModules>core;xml;sql;network;gui;widgets</QtModules>
+    <QtBuildConfig>release</QtBuildConfig>
+  </PropertyGroup>
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryPath>D:\c++demo\Qt\KShell\KShell\lib\debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\c++demo\Qt\KShell\KShell\include;D:\c++demo\Qt\KShell\KShell\include\curl;D:\c++demo\Qt\KShell\KShell\include\ssh;D:\QT\5.14.2\msvc2017\include\QtGui\5.14.2;D:\QT\5.14.2\msvc2017\include\QtCore\5.14.2;D:\QT\5.14.2\msvc2017\include\QtGui;D:\QT\5.14.2\msvc2017\include\QtCore;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
+    <IncludePath>D:\c++demo\Qt\KShell\KShell\include;D:\c++demo\Qt\KShell\KShell\include\curl;D:\c++demo\Qt\KShell\KShell\include\ssh;D:\QT\5.14.2\msvc2017\include\QtGui;D:\QT\5.14.2\msvc2017\include\QtGui\5.14.2;D:\QT\5.14.2\msvc2017\include\QtCore\5.14.2;D:\QT\5.14.2\msvc2017\include\QtCore;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\c++demo\Qt\KShell\KShell\lib\release;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Link>
+      <AdditionalDependencies>libcurl_debug.lib;QSshd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Link>
+      <AdditionalDependencies>libcurl.lib;QSsh.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Ftp.cpp" />
+    <ClCompile Include="FTPTreeList.cpp" />
+    <ClCompile Include="FTPTreeWork.cpp" />
+    <ClCompile Include="HelpWindows.cpp" />
+    <ClCompile Include="HomePage.cpp" />
+    <ClCompile Include="Log.cpp" />
+    <ClCompile Include="NewUser.cpp" />
+    <ClCompile Include="SetingWindow.cpp" />
+    <ClCompile Include="SshClient.cpp" />
+    <ClCompile Include="SSHWindow.cpp" />
+    <ClCompile Include="Tray.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="UPDate.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="SSHWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="SetingWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="Tray.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="HelpWindows.ui" />
+    <QtUic Include="HomePage.ui" />
+    <QtUic Include="NewUser.ui" />
+    <QtUic Include="SetingWindow.ui" />
+    <QtUic Include="SSHWindow.ui" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DataStruck.h" />
+    <ClInclude Include="Ftp.h" />
+    <ClInclude Include="Log.h" />
+    <QtMoc Include="UPDate.h" />
+    <QtMoc Include="SshClient.h" />
+    <QtMoc Include="NewUser.h" />
+    <QtMoc Include="HomePage.h" />
+    <QtMoc Include="HelpWindows.h" />
+    <QtMoc Include="FTPTreeWork.h" />
+    <QtMoc Include="FTPTreeList.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="img.qrc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="logo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="logo.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
