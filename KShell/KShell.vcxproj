@@ -38,7 +38,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="QtSettings">
     <QtInstall>5.14.2_msvc2017</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;xml;sql;network;gui;widgets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
@@ -61,6 +61,8 @@
     <IncludePath>D:\c++demo\Qt\KShell\KShell\include;D:\c++demo\Qt\KShell\KShell\include\curl;D:\c++demo\Qt\KShell\KShell\include\ssh;D:\QT\5.14.2\msvc2017\include\QtGui\5.14.2;D:\QT\5.14.2\msvc2017\include\QtCore\5.14.2;D:\QT\5.14.2\msvc2017\include\QtGui;D:\QT\5.14.2\msvc2017\include\QtCore;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
+    <IncludePath>D:\c++demo\Qt\KShell\KShell\include;D:\c++demo\Qt\KShell\KShell\include\curl;D:\c++demo\Qt\KShell\KShell\include\ssh;D:\QT\5.14.2\msvc2017\include\QtGui;D:\QT\5.14.2\msvc2017\include\QtGui\5.14.2;D:\QT\5.14.2\msvc2017\include\QtCore\5.14.2;D:\QT\5.14.2\msvc2017\include\QtCore;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\c++demo\Qt\KShell\KShell\lib\release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
@@ -69,6 +71,11 @@
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Link>
+      <AdditionalDependencies>libcurl.lib;QSsh.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
     <ClCompile>

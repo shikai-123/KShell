@@ -373,6 +373,10 @@ void UPDate::slotStartUPDate()
 		if (RemoteFileList.contains(LocalFile.FileName))
 		{
 		}
+		else if (true)
+		{
+			qDebug() << "云没有，本没有";
+		}
 		else//云没有，本地有----删掉本地文件,而删掉xml对应的节点，则在最后的移动xml文件中得到体现
 		{
 			if (!QFile::remove(LocalFile.LocalPath + LocalFile.FileName))//保证更新都能得到最新的升级列表
