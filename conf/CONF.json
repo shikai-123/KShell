@@ -16,7 +16,7 @@
         "Num": 5,
         "Size_MB": 1
     },
-    "LastUsedTime": "2024:06:02",
+    "LastUsedTime": "2024:06:16",
     "N2NIPSec": "",
     "OtherTools": {
         "Editor": "",
@@ -27,6 +27,6 @@
     },
     "SHHTogetherFTP": false,
     "SSHFTPDefaultPath": null,
-    "SSHFTPJzhsDefaultPath": "/mnt/nandflash/jzhs/",
+    "SSHFTPJzhsDefaultPath": "/",
     "SoftSkin": "blacksoft.css"
 }
