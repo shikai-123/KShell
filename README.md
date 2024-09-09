@@ -70,7 +70,10 @@ Kshell是一款基于QT和Libcurl开的window平台的一个SSH，FTP工具。
     
 # :camera_flash: 截图
 
-## 演示
+## 演示  
+### 视频介绍 
+[详细可以看视频演示,点击进入](https://www.bilibili.com/video/BV1ai421v76n/)   
+
 ![image](./screenshot/HTU.gif) 
 
 ## 首页
