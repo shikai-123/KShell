@@ -1,11 +1,4 @@
 {
-    "CheckPro": {
-        "Enable": 1,
-        "Time_S": 5
-    },
-    "DataMonit": {
-        "Time_S": 5
-    },
     "Font": {
         "FontType": "",
         "Fontsize": 4
@@ -16,17 +9,11 @@
         "Num": 5,
         "Size_MB": 1
     },
-    "LastUsedTime": "2024:06:16",
-    "N2NIPSec": "",
+    "LastUsedTime": "2026:06:02",
     "OtherTools": {
-        "Editor": "",
-        "FTP": "",
-        "OtherTool": "",
-        "SSH": "",
-        "ToolForCJQ": ""
+        "Editor": ""
     },
-    "SHHTogetherFTP": false,
-    "SSHFTPDefaultPath": null,
-    "SSHFTPJzhsDefaultPath": "/",
+    "SHHTogetherFTP": true,
+    "SSHFTPDefaultPath": "/",
     "SoftSkin": "blacksoft.css"
 }
