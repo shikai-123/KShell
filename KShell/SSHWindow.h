@@ -3,6 +3,7 @@
 #include "ui_SSHWindow.h"
 #include <qtimer.h>
 #include "SshClient.h"
+#include "KTermWidget.h"
 #include <qmessagebox.h>
 #include "qtabbar.h"
 #include <qvector.h>
@@ -43,6 +44,7 @@ public:
 	QVector<QWidget*> tw_NewTapWidget;//每个子窗口的界面
 	QVector<QGridLayout*>qgl_NewTapLay;//每个子窗口的布局
 	QVector<QTextEdit*> qe_SSHText;//每个子窗口的SSH输出窗口
+	QVector<KTermWidget*> m_termWidgets;//终端模拟器控件
 	int m_SSHNum = 0;//SSH数量
 	int m_CurrentSSHIndex = 0;//当前选中的SSH子窗口
 	QSqlDatabase m_CMDListDB;
@@ -75,6 +77,7 @@ public:
 
 public slots:
 	void slotDataArrived(QString strMsg, QString strIp, int nPort, int SSHIndex);//把收到的终端信息打印出来
+	void slotRawDataArrived(QByteArray data, int SSHIndex);//接收原始字节数据到终端
 	void slotConnectStateChanged(bool bState, QString Err, int SSHIndex);//改变连接图标的文字
 	void slotSshSendCmd();
 	void slotSshConnect();

@@ -127,7 +127,8 @@ void SSHWindow::Init()
 /* 在状态窗口 捕捉回车键 暂且没有调用 */
 bool SSHWindow::eventFilter(QObject * object, QEvent * event)
 {
-	if (object == qe_SSHText[m_CurrentSSHIndex] && event->type() == QEvent::KeyPress)
+	if (m_CurrentSSHIndex >= 0 && m_CurrentSSHIndex < qe_SSHText.size() &&
+		object == qe_SSHText[m_CurrentSSHIndex] && event->type() == QEvent::KeyPress)
 	{
 		QKeyEvent *e = static_cast<QKeyEvent *>(event);//！！转换无效 加头文件Qevent.h
 		if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return)//步骤三
@@ -152,8 +153,10 @@ void SSHWindow::slotConnectStateChanged(bool bState, QString Err, int SSHIndex)
 	{
 		qb_SSHConnet[SSHIndex]->setText("连接");
 		ui.tw_SSHTabWidget->setTabIcon(SSHIndex, QIcon(":/img/离线.png"));
-		qe_SSHText[SSHIndex]->append(Err);//#文本追加（不管光标位置)
-		qe_SSHText[SSHIndex]->moveCursor(QTextCursor::End);//移动光标到结尾
+		if (SSHIndex >= 0 && SSHIndex < m_termWidgets.size() && m_termWidgets[SSHIndex]) {
+			QByteArray errMsg = Err.toUtf8();
+			m_termWidgets[SSHIndex]->receiveData(errMsg + "\r\n");
+		}
 	}
 }
 
@@ -168,10 +171,6 @@ void SSHWindow::slotSshSendCmd()
 	qDebug() << "发送按钮被调用 " << m_CurrentSSHIndex;
 	if (m_bConnectState[m_CurrentSSHIndex]) {
 		QString strCmd = qe_SSHCmdLine[m_CurrentSSHIndex]->text();
-		if (strCmd == "ls" || strCmd == "ls -l")
-		{
-			strCmd = qe_SSHCmdLine[m_CurrentSSHIndex]->text() + " --color=never";
-		}
 		strCmd += "\n"; //添加回车
 		/*！放到这个地方是因为 Qt::UniqueConnection不适用于lambda*/
 		QMetaObject::invokeMethod(m_sshSocket[m_CurrentSSHIndex], "slotSend", Qt::QueuedConnection, Q_ARG(QString, strCmd), Q_ARG(int, m_CurrentSSHIndex));
@@ -195,25 +194,30 @@ void SSHWindow::slotSshConnect()
 			return;
 		}
 		qb_SSHConnet[m_CurrentSSHIndex]->hide();
-		qe_SSHText[m_CurrentSSHIndex]->setText("正在连接请稍候...");
-		qe_SSHText[m_CurrentSSHIndex]->show();
-		qe_SSHText[m_CurrentSSHIndex]->setReadOnly(true);
-		InitForSSHTextRK();
-		//	connect(qe_SSHText[m_CurrentSSHIndex], SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(slotQTextLineRK(QPoint)));
-		qe_SSHCmdLine[m_CurrentSSHIndex]->show();
-		qb_SSHSend[m_CurrentSSHIndex]->show();
-		qgl_NewTapLay[m_CurrentSSHIndex]->addWidget(qe_SSHText[m_CurrentSSHIndex], 0, 0, 3, 5);//坐标00 3行5列
-		qgl_NewTapLay[m_CurrentSSHIndex]->addWidget(qe_SSHCmdLine[m_CurrentSSHIndex], 4, 0, 1, 4);
-		qgl_NewTapLay[m_CurrentSSHIndex]->addWidget(qb_SSHSend[m_CurrentSSHIndex], 4, 4, 1, 1);
+
+		if (m_CurrentSSHIndex >= 0 && m_CurrentSSHIndex < m_termWidgets.size() && m_termWidgets[m_CurrentSSHIndex]) {
+			m_termWidgets[m_CurrentSSHIndex]->show();
+			m_termWidgets[m_CurrentSSHIndex]->receiveData(QString("正在连接请稍候...\r\n").toUtf8());
+		}
+
+		qgl_NewTapLay[m_CurrentSSHIndex]->addWidget(m_termWidgets[m_CurrentSSHIndex], 0, 0);
 		ui.tw_SSHTabWidget->currentWidget()->setLayout(qgl_NewTapLay[m_CurrentSSHIndex]);
-		m_sshSocket[m_CurrentSSHIndex]->m_SSHIndex = m_CurrentSSHIndex;//给SSH链接线程的序号，赋值。
-		/*创建 并启动线程 启动连接线程!!在这要注意，即使你创建线程，什么的都没问题，
-		但是也是要注意，如果你在主线程中，直接调用子线程中的函数的话，还是让这个函数，运行在主线程中。。 到时候还是有问题。*/
-		QMetaObject::invokeMethod(m_sshSocket[m_CurrentSSHIndex], "slotCreateConnection", Qt::QueuedConnection);//把断开操作发送到，SSH线程中，避免跨线程出现调用套接字
+	m_sshSocket[m_CurrentSSHIndex]->m_SSHIndex = m_CurrentSSHIndex;
+	m_sshSocket[m_CurrentSSHIndex]->m_termRows = m_termWidgets[m_CurrentSSHIndex]->getRows();
+	m_sshSocket[m_CurrentSSHIndex]->m_termCols = m_termWidgets[m_CurrentSSHIndex]->getCols();
+	qDebug() << "[SSHWin] 设置终端尺寸:" << m_sshSocket[m_CurrentSSHIndex]->m_termCols << "x" << m_sshSocket[m_CurrentSSHIndex]->m_termRows;
+	QMetaObject::invokeMethod(m_sshSocket[m_CurrentSSHIndex], "slotCreateConnection", Qt::QueuedConnection);
 		/*根据连接的状态----改变图标文字 -连接 断开*/
 		connect(m_sshSocket[m_CurrentSSHIndex], SIGNAL(sigConnectStateChanged(bool, QString, int)), this, SLOT(slotConnectStateChanged(bool, QString, int)));
-		/* 把从终端读到的数据放到文档编辑框中 */
-		connect(m_sshSocket[m_CurrentSSHIndex], SIGNAL(sigDataArrived(QString, QString, int, int)), this, SLOT(slotDataArrived(QString, QString, int, int)));
+		/* 把从终端读到的原始字节数据发送到终端控件 */
+		connect(m_sshSocket[m_CurrentSSHIndex], SIGNAL(sigRawDataArrived(QByteArray, int)), this, SLOT(slotRawDataArrived(QByteArray, int)));
+		/* 终端控件的键盘输入发送到SSH */
+		int termIdx = m_CurrentSSHIndex;
+		connect(m_termWidgets[m_CurrentSSHIndex], &KTermWidget::sendData, [this, termIdx](const QByteArray &data) {
+			if (termIdx >= 0 && termIdx < m_sshSocket.size() && m_bConnectState[termIdx]) {
+				QMetaObject::invokeMethod(m_sshSocket[termIdx], "slotSendRawData", Qt::QueuedConnection, Q_ARG(QByteArray, data), Q_ARG(int, termIdx));
+			}
+		});
 	}
 	else//！！删掉
 	{
@@ -264,6 +268,11 @@ void SSHWindow::slotAddTapwindow()
 	qb_SSHSend[m_SSHNum]->setObjectName(QString::number(m_SSHNum));
 	qb_SSHSend[m_SSHNum]->hide();//SSH输出窗口隐藏
 	connect(qb_SSHSend[m_SSHNum], SIGNAL(clicked()), this, SLOT(slotSshSendCmd()));//发送命令按钮
+
+	KTermWidget *termWidget = new KTermWidget(tw_NewTapWidget[m_SSHNum]);
+	termWidget->hide();
+	m_termWidgets.push_back(termWidget);
+
 	qDebug() << "m_SSHNum = " << m_SSHNum;
 	m_SSHNum++;
 }
@@ -327,10 +336,6 @@ void SSHWindow::keyReleaseEvent(QKeyEvent * e)
 		qDebug() << "回车发送被调用 " << m_CurrentSSHIndex;
 		if (m_bConnectState[m_CurrentSSHIndex]) {
 			QString strCmd = qe_SSHCmdLine[m_CurrentSSHIndex]->text();
-			if (strCmd == "ls" || strCmd == "ls -l")
-			{
-				strCmd = qe_SSHCmdLine[m_CurrentSSHIndex]->text() + " --color=never";
-			}
 			strCmd += "\n"; //添加回车
 			/*！放到这个地方是因为 Qt::UniqueConnection不适用于lambda*/
 			QMetaObject::invokeMethod(m_sshSocket[m_CurrentSSHIndex], "slotSend", Qt::QueuedConnection, Q_ARG(QString, strCmd), Q_ARG(int, m_CurrentSSHIndex));
@@ -452,10 +457,12 @@ void SSHWindow::slotCloseTab(int SSHIndex)
 	delete qb_SSHSend[SSHIndex];
 	delete qgl_NewTapLay[SSHIndex];
 	delete qe_SSHCmdLine[SSHIndex];
+	delete m_termWidgets[SSHIndex];
 	qe_SSHText.erase(qe_SSHText.begin() + SSHIndex);
 	qb_SSHSend.erase(qb_SSHSend.begin() + SSHIndex);
 	qgl_NewTapLay.erase(qgl_NewTapLay.begin() + SSHIndex);
 	qe_SSHCmdLine.erase(qe_SSHCmdLine.begin() + SSHIndex);
+	m_termWidgets.erase(m_termWidgets.begin() + SSHIndex);
 	m_bConnectState.erase(m_bConnectState.begin() + SSHIndex);
 	ui.tw_SSHTabWidget->removeTab(SSHIndex);
 	qb_SSHConnet.erase(qb_SSHConnet.begin() + SSHIndex);
@@ -468,37 +475,19 @@ void SSHWindow::slotCloseTab(int SSHIndex)
 /*接受SHH发来的信息*/
 void SSHWindow::slotDataArrived(QString strMsg, QString strIp, int nPort, int SSHIndex)
 {
-	//qDebug() << strMsg;
-	/*下面对于数据处理，看起来是很复杂，并且没有必要，但实际上是有很多必要的
-	据我观察，QSSH库给我数据分三种，
-	纯\r\n ，
-	以#结束的如“root@EC2022BR:/mnt/nandflash/xxxx/bin# ”，还
-	有就是最正常的以\r\n 结尾的cd /mnt/nandflash/xxxx/bin\\r\\n\"
-	还有上次没有发\r\n这次开头就发
-	如果不做处理的话，就会造成数据分散。比如一个句子，QSSH会打散发过来。所以需要处理。
-	还有一种情况，不同的句子之前会出现很多的换行，这是因为QSSH发给你的句子中，已经有了换行符（可能是系统给你添加的），然后还给你发送一个换行符。 这样就会造成多个换行
-	*/
-	//qDebug() << "rec：" << strMsg << "size " << strMsg.size();
-	Q_UNUSED(strIp);//Q_UNUSED() 没有实质性的作用，用来避免编译器警告--就是没有用strIp这个参数 正常来说，会警告
+	Q_UNUSED(strMsg);
+	Q_UNUSED(strIp);
 	Q_UNUSED(nPort);
-	SSHRecStr += strMsg;
-	//主要还是防止ssh有时候只发来一个字符，只有一个字符或者零星几个字符的话，是没有\r\n或者# 的，所以退出函数，然后继续累加字符串，等到字符串以\r\n结尾,在对字符串做处理
-	if (!(SSHRecStr.endsWith("\r\n") || strMsg.endsWith("# ")))
-	{
-		return;
+	Q_UNUSED(SSHIndex);
+}
+
+/*接收原始字节数据到终端*/
+void SSHWindow::slotRawDataArrived(QByteArray data, int SSHIndex)
+{
+	qDebug() << "[SSHWin] slotRawDataArrived:" << data.size() << "bytes, index:" << SSHIndex;
+	if (SSHIndex >= 0 && SSHIndex < m_termWidgets.size() && m_termWidgets[SSHIndex]) {
+		m_termWidgets[SSHIndex]->receiveData(data);
 	}
-	QStringList SHHTextList = SSHRecStr.split("\r\n");
-	for (size_t i = 0; i < SHHTextList.size(); i++)
-	{
-		if (SHHTextList[i].isEmpty())
-		{
-			continue;
-		}
-		qe_SSHText[SSHIndex]->append(SHHTextList[i]);//#文本追加（不管光标位置)
-		qe_SSHText[SSHIndex]->moveCursor(QTextCursor::End);//移动光标到结尾
-	}
-	SSHRecStr.clear();
-	SHHTextList.clear();
 }
 
 /*测试槽函数---不带参*/
@@ -557,11 +546,7 @@ void SSHWindow::slotTableClicked(const QModelIndex &index)
 
 	qDebug() << "CMD表格被调用 " << m_CurrentSSHIndex;
 	if (m_bConnectState.size() > m_CurrentSSHIndex && m_bConnectState[m_CurrentSSHIndex]) {
-		if (m_CMD == "ls" || m_CMD == "ls -l")
-		{
-			m_CMD = m_CMD + " --color=never";
-		}
-		else if (m_CMD == "reboot")
+		if (m_CMD == "reboot")
 		{
 			int ret = QMessageBox::question(this, "警告", "是否重启", QMessageBox::Yes | QMessageBox::No);
 			if (ret == QMessageBox::No)
