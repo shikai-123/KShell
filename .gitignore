@@ -21,3 +21,10 @@
 .vscode
 .kilo
 conf
+vc140.pdb
+conf/UserList.db
+KShell/KShell.filters
+KShell/KShell.vcxproj
+KShell/lib/
+Update/UpdateList.xml
+KShell/KShell.filters
