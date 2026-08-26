@@ -1,4 +1,4 @@
-#include "KTermWidget.h"
+﻿#include "KTermWidget.h"
 #include <QPainter>
 #include <QKeyEvent>
 #include <QResizeEvent>
@@ -51,7 +51,9 @@ KTermWidget::KTermWidget(QWidget *parent)
     setAttribute(Qt::WA_KeyCompression, false);
     setMinimumSize(200, 100);
 
-    m_font.setFamily(QStringLiteral("Microsoft YaHei Mono"));
+    // 系统不存在 "Microsoft YaHei Mono"，回退出非等宽字体会导致字符被裁切；
+    // 改用系统自带且严格等宽的 Consolas，中文由 Qt 自动回退到系统中文字体。
+    m_font.setFamily(QStringLiteral("Consolas"));
     m_font.setPointSize(10);
     m_font.setStyleHint(QFont::Monospace);
     m_font.setFixedPitch(true);
@@ -119,6 +121,7 @@ void KTermWidget::initVTerm(int rows, int cols)
     m_rows = rows;
     m_cols = cols;
     memset(&m_cursorPos, 0, sizeof(m_cursorPos));
+    m_mouseMode = VTERM_PROP_MOUSE_NONE;
 }
 
 void KTermWidget::updateTermSize()
@@ -140,6 +143,7 @@ void KTermWidget::updateTermSize()
             vterm_set_size(m_vterm, m_rows, m_cols);
             vterm_screen_flush_damage(m_screen);
         }
+        emit sizeChanged(m_rows, m_cols);
     }
 }
 
@@ -236,6 +240,12 @@ void KTermWidget::paintEvent(QPaintEvent *event)
                     memset(&cell, 0, sizeof(cell));
                 }
             }
+
+            // 双宽度(宽字符)的续行格，libvterm 以 chars[0]==0xFFFFFFFF 标记。
+            // 前导格已用 cell.width*cellWidth 的宽度铺满整个双格背景，
+            // 这里必须跳过，否则再填充背景会覆盖宽字符的右半部分——这正是"汉字只显示一半"的根因。
+            if (cell.chars[0] == static_cast<uint32_t>(-1))
+                continue;
 
             QColor fg = vtermColorToQColor(cell.fg);
             QColor bg = vtermColorToQColor(cell.bg);
@@ -395,16 +405,7 @@ void KTermWidget::keyPressEvent(QKeyEvent *event)
     if (vkey != VTERM_KEY_NONE)
     {
         vterm_keyboard_key(m_vterm, vkey, mod);
-
-        char buf[32];
-        size_t len;
-        QByteArray output;
-        while ((len = vterm_output_read(m_vterm, buf, sizeof(buf))) > 0)
-        {
-            output.append(buf, static_cast<int>(len));
-        }
-        if (!output.isEmpty())
-            emit sendData(output);
+        flushOutput();
         return;
     }
 
@@ -419,16 +420,7 @@ void KTermWidget::keyPressEvent(QKeyEvent *event)
                 vterm_keyboard_unichar(m_vterm, c, mod);
             }
         }
-
-        char buf[32];
-        size_t len;
-        QByteArray output;
-        while ((len = vterm_output_read(m_vterm, buf, sizeof(buf))) > 0)
-        {
-            output.append(buf, static_cast<int>(len));
-        }
-        if (!output.isEmpty())
-            emit sendData(output);
+        flushOutput();
     }
 }
 
@@ -443,7 +435,24 @@ void KTermWidget::resizeEvent(QResizeEvent *event)
 void KTermWidget::mousePressEvent(QMouseEvent *event)
 {
     setFocus();
+
+    int button = 0;
     if (event->button() == Qt::LeftButton)
+        button = 1;
+    else if (event->button() == Qt::MiddleButton)
+        button = 2;
+    else if (event->button() == Qt::RightButton)
+        button = 3;
+
+    if (button > 0)
+    {
+        VTermModifier mod = qtModifiersToVTerm(event->modifiers());
+        vterm_mouse_button(m_vterm, button, true, mod);
+        flushOutput();
+    }
+
+    // 应用未捕获鼠标时，左键用于本地文本选择；已被捕获则交给应用（如 vim）
+    if (event->button() == Qt::LeftButton && m_mouseMode == VTERM_PROP_MOUSE_NONE)
     {
         m_selStart = mouseToCellPos(event->pos());
         m_selEnd = m_selStart;
@@ -455,6 +464,17 @@ void KTermWidget::mousePressEvent(QMouseEvent *event)
 
 void KTermWidget::mouseMoveEvent(QMouseEvent *event)
 {
+    // 应用捕获鼠标时上报移动（如 vim 中按住左键拖选）
+    if (m_mouseMode != VTERM_PROP_MOUSE_NONE)
+    {
+        int col = qBound(0, event->pos().x() / m_cellWidth, m_cols - 1);
+        int row = qBound(0, event->pos().y() / m_cellHeight, m_rows - 1);
+        VTermModifier mod = qtModifiersToVTerm(event->modifiers());
+        vterm_mouse_move(m_vterm, row, col, mod);
+        flushOutput();
+        return;
+    }
+
     if (m_selecting)
     {
         m_selEnd = mouseToCellPos(event->pos());
@@ -466,6 +486,21 @@ void KTermWidget::mouseMoveEvent(QMouseEvent *event)
 
 void KTermWidget::mouseReleaseEvent(QMouseEvent *event)
 {
+    int button = 0;
+    if (event->button() == Qt::LeftButton)
+        button = 1;
+    else if (event->button() == Qt::MiddleButton)
+        button = 2;
+    else if (event->button() == Qt::RightButton)
+        button = 3;
+
+    if (button > 0)
+    {
+        VTermModifier mod = qtModifiersToVTerm(event->modifiers());
+        vterm_mouse_button(m_vterm, button, false, mod);
+        flushOutput();
+    }
+
     if (event->button() == Qt::LeftButton && m_selecting)
     {
         m_selEnd = mouseToCellPos(event->pos());
@@ -487,6 +522,17 @@ void KTermWidget::wheelEvent(QWheelEvent *event)
     int steps = delta / 120;
     if (steps == 0)
         steps = (delta > 0) ? 1 : -1;
+
+    // 应用捕获鼠标时，滚轮上报给应用（4=上 5=下），不本地滚动
+    if (steps != 0 && m_mouseMode != VTERM_PROP_MOUSE_NONE)
+    {
+        VTermModifier mod = qtModifiersToVTerm(event->modifiers());
+        int button = steps > 0 ? 4 : 5;
+        vterm_mouse_button(m_vterm, button, true, mod);
+        vterm_mouse_button(m_vterm, button, false, mod);
+        flushOutput();
+        return;
+    }
 
     if (steps > 0)
     {
@@ -634,6 +680,9 @@ int KTermWidget::cbSetTermProp(VTermProp prop, VTermValue *val, void *user)
         break;
     case VTERM_PROP_ALTSCREEN:
         self->update();
+        break;
+    case VTERM_PROP_MOUSE:
+        self->m_mouseMode = val->number;
         break;
     default:
         break;
@@ -799,8 +848,27 @@ void KTermWidget::resetScrollOffset()
     }
 }
 
+void KTermWidget::flushOutput()
+{
+    if (!m_vterm)
+        return;
+
+    char buf[32];
+    size_t len;
+    QByteArray output;
+    while ((len = vterm_output_read(m_vterm, buf, sizeof(buf))) > 0)
+        output.append(buf, static_cast<int>(len));
+
+    if (!output.isEmpty())
+        emit sendData(output);
+}
+
 void KTermWidget::contextMenuEvent(QContextMenuEvent *event)
 {
+    // 应用捕获鼠标时（如 vim），右键交给应用，不弹本地菜单
+    if (m_mouseMode != VTERM_PROP_MOUSE_NONE)
+        return;
+
     QMenu menu(this);
 
     QAction *copyAct = menu.addAction(QString::fromUtf8("\xe5\xa4\x8d\xe5\x88\xb6 (Ctrl+Shift+C)"));

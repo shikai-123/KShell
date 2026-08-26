@@ -117,6 +117,16 @@ void CConnectionForSshClient::slotCreateConnection()
 	qDebug() << "CConnectionForSshClient::slotCreateConnection() 以ssh方式 尝试连接:" << getIpPort();
 }
 
+/* 记录本地窗口尺寸，用于之后通知远端PTY
+ * 暂时跳过：QSsh 为预编译 DLL，缺少 window-change 接口，无法通知远端PTY尺寸变化 */
+void CConnectionForSshClient::slotTerminalResize(int cols, int rows)
+{
+	m_termCols = cols;
+	m_termRows = rows;
+	// if (m_bConnected && m_shell && m_shell->isRunning())
+	// 	m_shell->resizeTerminal(cols, rows);
+}
+
 /* 4 连接成功之后  拿到关于该设备的套接字 */
 void CConnectionForSshClient::slotConnected()
 {
@@ -132,6 +142,8 @@ void CConnectionForSshClient::slotConnected()
 			{
 		this->m_bSendAble = true;
 		qInfo() << "[SSH] Shell已启动:" << getIpPort();
+		// 确保远端PTY拿到正确的终端尺寸，避免vim等全屏应用排版错乱
+		this->slotTerminalResize(this->m_termCols, this->m_termRows);
 		m_shell->write("export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8\n"); });
 
 	connect(m_shell.data(), &QSsh::SshRemoteProcess::readyReadStandardError, [&]()

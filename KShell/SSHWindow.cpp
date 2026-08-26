@@ -2,20 +2,21 @@
 #include <qpixmap.h>
 #include <Windows.h>
 #include <qdatetime.h>
-#include"SshClient.h"
+#include "SshClient.h"
 #include <QDebug>
-#include<qevent.h>
+#include <qevent.h>
+#include <QApplication>
 #include "FTPTreeList.h"
 
 #pragma execution_character_set("utf-8")
 extern bool g_bConnectState;
-//extern ProStatusSsh *g_ProStatusSsh;
-extern QString g_ElecRoomID, g_DevIP, g_ConnetIP, g_DevPort, g_UserName, g_UserWord, g_UserListNote, g_FTPType, g_DevIndex, g_ProjectName, g_FTPHead;//用于采集登录信息 g_FTPHead:用来区别ftp和sftp
+// extern ProStatusSsh *g_ProStatusSsh;
+extern QString g_ElecRoomID, g_DevIP, g_ConnetIP, g_DevPort, g_UserName, g_UserWord, g_UserListNote, g_FTPType, g_DevIndex, g_ProjectName, g_FTPHead; // 用于采集登录信息 g_FTPHead:用来区别ftp和sftp
 extern QString g_SSHFTPDefaultPath;
 // mSeconds 毫秒 最大100s
 void Delay(int mSeconds)
 {
-	QTime dieTime = QTime::currentTime().addMSecs(mSeconds);//返回一个当前时间对象之后或之前ms毫秒的时间对象(之前还是之后视ms的符号,如为正则之后，反之之前)
+	QTime dieTime = QTime::currentTime().addMSecs(mSeconds); // 返回一个当前时间对象之后或之前ms毫秒的时间对象(之前还是之后视ms的符号,如为正则之后，反之之前)
 	while (QTime::currentTime() < dieTime)
 	{
 		QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
@@ -34,22 +35,22 @@ SSHWindow::~SSHWindow()
 {
 }
 
-//创建一个数据库
+// 创建一个数据库
 void SSHWindow::CreatDB()
 {
-	m_CMDListDB = QSqlDatabase::addDatabase("QSQLITE", "CMDList");//添加驱动---虽然不是同一个数据库，但是两个数据库的名字都是默认的，这样名字就是一样的，就会出现问题
-	m_CMDListDB.setDatabaseName("../conf/CMDList.db");//数据库的名字----这个地方只是说明路径而已，其他就没了
+	m_CMDListDB = QSqlDatabase::addDatabase("QSQLITE", "CMDList"); // 添加驱动---虽然不是同一个数据库，但是两个数据库的名字都是默认的，这样名字就是一样的，就会出现问题
+	m_CMDListDB.setDatabaseName("../conf/CMDList.db");			   // 数据库的名字----这个地方只是说明路径而已，其他就没了
 }
 
 /*打开命令列表数据库*/
 void SSHWindow::OpenDB()
 {
-	m_CMDListDB = QSqlDatabase::database("CMDList");//获取指向数据库连接
-	m_CMDListDB.setDatabaseName("../conf/CMDList.db");//数据库的名字
-	bool ok = m_CMDListDB.open();//如果不存在就创建，存在就打开
+	m_CMDListDB = QSqlDatabase::database("CMDList");   // 获取指向数据库连接
+	m_CMDListDB.setDatabaseName("../conf/CMDList.db"); // 数据库的名字
+	bool ok = m_CMDListDB.open();					   // 如果不存在就创建，存在就打开
 	if (!ok)
 	{
-		qDebug() << m_CMDListDB.lastError().text();//调用上一次出错的原因
+		qDebug() << m_CMDListDB.lastError().text(); // 调用上一次出错的原因
 		QMessageBox::critical(this, "命令列表错误", "检查数据库文件\n" + m_CMDListDB.lastError().text());
 		exit(-1);
 		m_CMDListDB.close();
@@ -73,19 +74,20 @@ void SSHWindow::contextMenuEvent(QContextMenuEvent *)
 		QScopedPointer<QAction> m_ActNew(new QAction("新建", ui.tv_CMDTable));
 		QScopedPointer<QAction> m_ActChange(new QAction("修改", ui.tv_CMDTable));
 		QScopedPointer<QAction> m_ActDel(new QAction("删除", ui.tv_CMDTable));
-		connect(m_ActNew.get(), &QAction::triggered, [&]() {
+		connect(m_ActNew.get(), &QAction::triggered, [&]()
+				{
 			ISCreat = true;
 			le_CMD->clear();
 			le_CMDText->clear();
-			qw_CMDWindow->show();
-		});
-		connect(m_ActChange.get(), &QAction::triggered, [&]() {
+			qw_CMDWindow->show(); });
+		connect(m_ActChange.get(), &QAction::triggered, [&]()
+				{
 			ISCreat = false;
 			le_CMD->setText(m_CMD);
 			le_CMDText->setText(m_CMDtext);
-			qw_CMDWindow->show();
-		});
-		connect(m_ActDel.get(), &QAction::triggered, [&]() {
+			qw_CMDWindow->show(); });
+		connect(m_ActDel.get(), &QAction::triggered, [&]()
+				{
 			int ret = QMessageBox::question(this, "删除", "是否删除", QMessageBox::Yes | QMessageBox::No);
 			if (ret == QMessageBox::No)
 			{
@@ -98,14 +100,12 @@ void SSHWindow::contextMenuEvent(QContextMenuEvent *)
 			query.bindValue(":CMDtext", m_CMDtext);
 			bool ok = query.exec();
 			CloseDB();
-			slotLoadBDtoCMDTable();
-		});
+			slotLoadBDtoCMDTable(); });
 		menu->addAction(m_ActNew.get());
 		menu->addAction(m_ActDel.get());
 		menu->addAction(m_ActChange.get());
 		menu->addSeparator();
 		menu->exec(QCursor::pos());
-
 	}
 }
 
@@ -113,25 +113,25 @@ void SSHWindow::contextMenuEvent(QContextMenuEvent *)
 void SSHWindow::Init()
 {
 	this->setWindowTitle("SSH客户端");
-	ProStatusInitMap = QPixmap(":/img/问号.png");//设置的图片的方式 还可以通过这种方式来做
+	ProStatusInitMap = QPixmap(":/img/问号.png"); // 设置的图片的方式 还可以通过这种方式来做
 	ProStatusOnlineMap.load(":/img/在线.png");
 	proStatusOutlineMap.load(":/img/离线.png");
-	CreatDB();//创造数据库
-	InitTapWidget();//TapWidget初始化
-	InitTable();//命令表格初始化
-	InitCMDWidget();//CMD操作窗口初始化
-	ui.splitter->setStretchFactor(0, 85);//设置分割比例
+	CreatDB();							  // 创造数据库
+	InitTapWidget();					  // TapWidget初始化
+	InitTable();						  // 命令表格初始化
+	InitCMDWidget();					  // CMD操作窗口初始化
+	ui.splitter->setStretchFactor(0, 85); // 设置分割比例
 	ui.splitter->setStretchFactor(1, 15);
 }
 
 /* 在状态窗口 捕捉回车键 暂且没有调用 */
-bool SSHWindow::eventFilter(QObject * object, QEvent * event)
+bool SSHWindow::eventFilter(QObject *object, QEvent *event)
 {
 	if (m_CurrentSSHIndex >= 0 && m_CurrentSSHIndex < qe_SSHText.size() &&
 		object == qe_SSHText[m_CurrentSSHIndex] && event->type() == QEvent::KeyPress)
 	{
-		QKeyEvent *e = static_cast<QKeyEvent *>(event);//！！转换无效 加头文件Qevent.h
-		if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return)//步骤三
+		QKeyEvent *e = static_cast<QKeyEvent *>(event);				 // ！！转换无效 加头文件Qevent.h
+		if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return) // 步骤三
 		{
 			qDebug() << "捕捉到回车键  " << m_CurrentSSHIndex;
 			return true;
@@ -144,7 +144,8 @@ bool SSHWindow::eventFilter(QObject * object, QEvent * event)
 void SSHWindow::slotConnectStateChanged(bool bState, QString Err, int SSHIndex)
 {
 	m_bConnectState[SSHIndex] = bState;
-	if (m_bConnectState[SSHIndex]) {
+	if (m_bConnectState[SSHIndex])
+	{
 
 		qb_SSHConnet[SSHIndex]->setText("断开");
 		ui.tw_SSHTabWidget->setTabIcon(SSHIndex, QIcon(":/img/在线.png"));
@@ -153,7 +154,8 @@ void SSHWindow::slotConnectStateChanged(bool bState, QString Err, int SSHIndex)
 	{
 		qb_SSHConnet[SSHIndex]->setText("连接");
 		ui.tw_SSHTabWidget->setTabIcon(SSHIndex, QIcon(":/img/离线.png"));
-		if (SSHIndex >= 0 && SSHIndex < m_termWidgets.size() && m_termWidgets[SSHIndex]) {
+		if (SSHIndex >= 0 && SSHIndex < m_termWidgets.size() && m_termWidgets[SSHIndex])
+		{
 			QByteArray errMsg = Err.toUtf8();
 			m_termWidgets[SSHIndex]->receiveData(errMsg + "\r\n");
 		}
@@ -163,18 +165,18 @@ void SSHWindow::slotConnectStateChanged(bool bState, QString Err, int SSHIndex)
 /*发送命令*/
 void SSHWindow::slotSshSendCmd()
 {
-	if (QObject::sender() != nullptr)//如果不是 删除按钮调用的删除函数  那么btnName就为"" 如果
+	if (QObject::sender() != nullptr) // 如果不是 删除按钮调用的删除函数  那么btnName就为"" 如果
 	{
 		qDebug() << "发送按钮objectName " << QObject::sender()->objectName();
 	}
 
 	qDebug() << "发送按钮被调用 " << m_CurrentSSHIndex;
-	if (m_bConnectState[m_CurrentSSHIndex]) {
+	if (m_bConnectState[m_CurrentSSHIndex])
+	{
 		QString strCmd = qe_SSHCmdLine[m_CurrentSSHIndex]->text();
-		strCmd += "\n"; //添加回车
+		strCmd += "\n"; // 添加回车
 		/*！放到这个地方是因为 Qt::UniqueConnection不适用于lambda*/
 		QMetaObject::invokeMethod(m_sshSocket[m_CurrentSSHIndex], "slotSend", Qt::QueuedConnection, Q_ARG(QString, strCmd), Q_ARG(int, m_CurrentSSHIndex));
-
 	}
 	else
 	{
@@ -187,7 +189,8 @@ void SSHWindow::slotSshSendCmd()
 void SSHWindow::slotSshConnect()
 {
 	qDebug() << "连接按钮被调用  " << m_CurrentSSHIndex;
-	if (!m_bConnectState[m_CurrentSSHIndex]) {
+	if (!m_bConnectState[m_CurrentSSHIndex])
+	{
 		if (g_ConnetIP == "")
 		{
 			QMessageBox::critical(this, "IP未选择", "IP未选择");
@@ -195,33 +198,34 @@ void SSHWindow::slotSshConnect()
 		}
 		qb_SSHConnet[m_CurrentSSHIndex]->hide();
 
-		if (m_CurrentSSHIndex >= 0 && m_CurrentSSHIndex < m_termWidgets.size() && m_termWidgets[m_CurrentSSHIndex]) {
+		if (m_CurrentSSHIndex >= 0 && m_CurrentSSHIndex < m_termWidgets.size() && m_termWidgets[m_CurrentSSHIndex])
+		{
 			m_termWidgets[m_CurrentSSHIndex]->show();
 			m_termWidgets[m_CurrentSSHIndex]->receiveData(QString("正在连接请稍候...\r\n").toUtf8());
 		}
 
 		qgl_NewTapLay[m_CurrentSSHIndex]->addWidget(m_termWidgets[m_CurrentSSHIndex], 0, 0);
 		ui.tw_SSHTabWidget->currentWidget()->setLayout(qgl_NewTapLay[m_CurrentSSHIndex]);
-	m_sshSocket[m_CurrentSSHIndex]->m_SSHIndex = m_CurrentSSHIndex;
-	m_sshSocket[m_CurrentSSHIndex]->m_termRows = m_termWidgets[m_CurrentSSHIndex]->getRows();
-	m_sshSocket[m_CurrentSSHIndex]->m_termCols = m_termWidgets[m_CurrentSSHIndex]->getCols();
-	qDebug() << "[SSHWin] 设置终端尺寸:" << m_sshSocket[m_CurrentSSHIndex]->m_termCols << "x" << m_sshSocket[m_CurrentSSHIndex]->m_termRows;
-	QMetaObject::invokeMethod(m_sshSocket[m_CurrentSSHIndex], "slotCreateConnection", Qt::QueuedConnection);
+		m_sshSocket[m_CurrentSSHIndex]->m_SSHIndex = m_CurrentSSHIndex;
+		m_sshSocket[m_CurrentSSHIndex]->m_termRows = m_termWidgets[m_CurrentSSHIndex]->getRows();
+		m_sshSocket[m_CurrentSSHIndex]->m_termCols = m_termWidgets[m_CurrentSSHIndex]->getCols();
+		qDebug() << "[SSHWin] 设置终端尺寸:" << m_sshSocket[m_CurrentSSHIndex]->m_termCols << "x" << m_sshSocket[m_CurrentSSHIndex]->m_termRows;
+		QMetaObject::invokeMethod(m_sshSocket[m_CurrentSSHIndex], "slotCreateConnection", Qt::QueuedConnection);
 		/*根据连接的状态----改变图标文字 -连接 断开*/
 		connect(m_sshSocket[m_CurrentSSHIndex], SIGNAL(sigConnectStateChanged(bool, QString, int)), this, SLOT(slotConnectStateChanged(bool, QString, int)));
 		/* 把从终端读到的原始字节数据发送到终端控件 */
 		connect(m_sshSocket[m_CurrentSSHIndex], SIGNAL(sigRawDataArrived(QByteArray, int)), this, SLOT(slotRawDataArrived(QByteArray, int)));
 		/* 终端控件的键盘输入发送到SSH */
 		int termIdx = m_CurrentSSHIndex;
-		connect(m_termWidgets[m_CurrentSSHIndex], &KTermWidget::sendData, [this, termIdx](const QByteArray &data) {
+		connect(m_termWidgets[m_CurrentSSHIndex], &KTermWidget::sendData, [this, termIdx](const QByteArray &data)
+				{
 			if (termIdx >= 0 && termIdx < m_sshSocket.size() && m_bConnectState[termIdx]) {
 				QMetaObject::invokeMethod(m_sshSocket[termIdx], "slotSendRawData", Qt::QueuedConnection, Q_ARG(QByteArray, data), Q_ARG(int, termIdx));
-			}
-		});
+			} });
 	}
-	else//！！删掉
+	else // ！！删掉
 	{
-		emit sigDisconnected();//断开连接
+		emit sigDisconnected(); // 断开连接
 	}
 }
 
@@ -245,33 +249,48 @@ void SSHWindow::slotAddTapwindow()
 	m_bConnectState.push_back(false);
 	m_pThread.push_back(new QThread());
 	tw_NewTapWidget.push_back(new QWidget());
-	qb_SSHConnet.push_back(new QPushButton("连接", tw_NewTapWidget[m_SSHNum]));//把按钮放在子窗口上
+	qb_SSHConnet.push_back(new QPushButton("连接", tw_NewTapWidget[m_SSHNum])); // 把按钮放在子窗口上
 	qb_SSHConnet[m_SSHNum]->setObjectName(QString::number(m_SSHNum));
 
-	ui.tw_SSHTabWidget->insertTab(ui.tw_SSHTabWidget->count() - 1, tw_NewTapWidget[m_SSHNum], g_ConnetIP);//增加子窗口
-	m_sshSocket.push_back(new CConnectionForSshClient(g_ConnetIP, g_DevPort.toInt(), g_UserName, g_UserWord));//!在新建tab窗口的时候，就创建ssh套接字
-	//connect(m_pThread[m_SSHNum], SIGNAL(finished()), this, SLOT(slottest()));//线程退出信号
+	ui.tw_SSHTabWidget->insertTab(ui.tw_SSHTabWidget->count() - 1, tw_NewTapWidget[m_SSHNum], g_ConnetIP);	   // 增加子窗口
+	m_sshSocket.push_back(new CConnectionForSshClient(g_ConnetIP, g_DevPort.toInt(), g_UserName, g_UserWord)); //! 在新建tab窗口的时候，就创建ssh套接字
+	// connect(m_pThread[m_SSHNum], SIGNAL(finished()), this, SLOT(slottest()));//线程退出信号
 	m_sshSocket[m_SSHNum]->moveToThread(m_pThread[m_SSHNum]);
-	m_pThread[m_SSHNum]->start();//添加窗口后，就启动线程
+	m_pThread[m_SSHNum]->start(); // 添加窗口后，就启动线程
 	qDebug() << "启动线程 ID：" << m_pThread[m_SSHNum]->currentThreadId();
-	connect(qb_SSHConnet[m_SSHNum], SIGNAL(clicked()), this, SLOT(slotSshConnect()));//连接按钮
-	//connect(m_pThread[m_SSHNum], SIGNAL(finished()), m_sshSocket[m_SSHNum], SLOT(slotThreadFinished()));//如果线程结束 调用析构回收线程资源以及这个对象的资源
-	connect(m_pThread[m_SSHNum], SIGNAL(finished()), m_sshSocket[m_SSHNum], SLOT(slotDisconnected()));//如果线程结束 ,断开连接，然后释放 调用析构回收线程资源以及这个对象的资源
-	ui.tw_SSHTabWidget->setTabIcon(m_SSHNum, QIcon(":/img/离线.png"));//子窗口图标
-	qgl_NewTapLay.push_back(new QGridLayout());//每个子窗口的布局
-	qe_SSHCmdLine.push_back(new QLineEdit("在此输入命令", tw_NewTapWidget[m_SSHNum]));//命令发送输入框
-	qe_SSHCmdLine[m_SSHNum]->hide();//命令发送输入框隐藏
-	qe_SSHText.push_back(new QTextEdit(tw_NewTapWidget[m_SSHNum]));//每个子窗口的SSH输出窗口
-	qe_SSHText[m_SSHNum]->hide();//SSH输出窗口隐藏
-	qb_SSHSend.push_back(new QPushButton("发送", tw_NewTapWidget[m_SSHNum]));//发送按钮
-	qe_SSHText[m_SSHNum]->document()->setMaximumBlockCount(1000);//内容限制1000行
+	connect(qb_SSHConnet[m_SSHNum], SIGNAL(clicked()), this, SLOT(slotSshConnect())); // 连接按钮
+	// connect(m_pThread[m_SSHNum], SIGNAL(finished()), m_sshSocket[m_SSHNum], SLOT(slotThreadFinished()));//如果线程结束 调用析构回收线程资源以及这个对象的资源
+	connect(m_pThread[m_SSHNum], SIGNAL(finished()), m_sshSocket[m_SSHNum], SLOT(slotDisconnected())); // 如果线程结束 ,断开连接，然后释放 调用析构回收线程资源以及这个对象的资源
+	ui.tw_SSHTabWidget->setTabIcon(m_SSHNum, QIcon(":/img/离线.png"));								   // 子窗口图标
+	qgl_NewTapLay.push_back(new QGridLayout());														   // 每个子窗口的布局
+	qe_SSHCmdLine.push_back(new QLineEdit("在此输入命令", tw_NewTapWidget[m_SSHNum]));				   // 命令发送输入框
+	qe_SSHCmdLine[m_SSHNum]->hide();																   // 命令发送输入框隐藏
+	qe_SSHText.push_back(new QTextEdit(tw_NewTapWidget[m_SSHNum]));									   // 每个子窗口的SSH输出窗口
+	qe_SSHText[m_SSHNum]->hide();																	   // SSH输出窗口隐藏
+	qb_SSHSend.push_back(new QPushButton("发送", tw_NewTapWidget[m_SSHNum]));						   // 发送按钮
+	qe_SSHText[m_SSHNum]->document()->setMaximumBlockCount(1000);									   // 内容限制1000行
 	qb_SSHSend[m_SSHNum]->setObjectName(QString::number(m_SSHNum));
-	qb_SSHSend[m_SSHNum]->hide();//SSH输出窗口隐藏
-	connect(qb_SSHSend[m_SSHNum], SIGNAL(clicked()), this, SLOT(slotSshSendCmd()));//发送命令按钮
+	qb_SSHSend[m_SSHNum]->hide();													// SSH输出窗口隐藏
+	connect(qb_SSHSend[m_SSHNum], SIGNAL(clicked()), this, SLOT(slotSshSendCmd())); // 发送命令按钮
 
 	KTermWidget *termWidget = new KTermWidget(tw_NewTapWidget[m_SSHNum]);
 	termWidget->hide();
 	m_termWidgets.push_back(termWidget);
+
+	// 终端尺寸变化 -> 记录最新尺寸，并在已连接时通知远端PTY调整大小（解决vim等全屏应用排版错乱）
+	connect(termWidget, &KTermWidget::sizeChanged, this, [this, termWidget](int rows, int cols)
+			{
+		int idx = m_termWidgets.indexOf(termWidget);
+		if (idx < 0 || idx >= m_sshSocket.size() || !m_sshSocket[idx])
+			return;
+		m_sshSocket[idx]->m_termRows = rows;
+		m_sshSocket[idx]->m_termCols = cols;
+		bool connected = (idx < m_bConnectState.size()) && m_bConnectState[idx];
+		if (connected)
+		{
+			QMetaObject::invokeMethod(m_sshSocket[idx], "slotTerminalResize",
+				Qt::QueuedConnection, Q_ARG(int, cols), Q_ARG(int, rows));
+		} });
 
 	qDebug() << "m_SSHNum = " << m_SSHNum;
 	m_SSHNum++;
@@ -280,7 +299,7 @@ void SSHWindow::slotAddTapwindow()
 /*TapWidget初始化*/
 void SSHWindow::InitTapWidget()
 {
-	ui.tw_SSHTabWidget->tabBar()->setTabsClosable(1);//为每个标签添加close按钮
+	ui.tw_SSHTabWidget->tabBar()->setTabsClosable(1); // 为每个标签添加close按钮
 	connect(ui.tw_SSHTabWidget->tabBar(), SIGNAL(tabCloseRequested(int)), this, SLOT(slotCloseTab(int)));
 	connect(ui.tw_SSHTabWidget->tabBar(), SIGNAL(tabBarClicked(int)), this, SLOT(slotGetSSHTabIndex(int)));
 	/*创建第一个tap窗口*/
@@ -288,8 +307,8 @@ void SSHWindow::InitTapWidget()
 	ui.tw_SSHTabWidget->insertTab(0, tw_NewTapWidget, "");
 
 	/*tab窗口中的加号*/
-	qb_SSHWidgetadd = new QPushButton("+");//tapwidget的加号+
-	ui.tw_SSHTabWidget->tabBar()->setTabButton(0, QTabBar::RightSide, qb_SSHWidgetadd);//tabwidget的首页的加号
+	qb_SSHWidgetadd = new QPushButton("+");												// tapwidget的加号+
+	ui.tw_SSHTabWidget->tabBar()->setTabButton(0, QTabBar::RightSide, qb_SSHWidgetadd); // tabwidget的首页的加号
 	connect(qb_SSHWidgetadd, SIGNAL(clicked()), this, SLOT(slotAddTapwindow()));
 }
 
@@ -299,13 +318,12 @@ void SSHWindow::InitTable()
 	m_CMDItemModel = new QStandardItemModel();
 	ui.tv_CMDTable->setModel(m_CMDItemModel);
 	m_CMDItemModel->setHorizontalHeaderLabels(QStringList() << "命令" << "描述");
-	ui.tv_CMDTable->setEditTriggers(QAbstractItemView::NoEditTriggers);//不可编辑
-	ui.tv_CMDTable->setSelectionBehavior(QAbstractItemView::SelectRows);	//选择行
+	ui.tv_CMDTable->setEditTriggers(QAbstractItemView::NoEditTriggers);	 // 不可编辑
+	ui.tv_CMDTable->setSelectionBehavior(QAbstractItemView::SelectRows); // 选择行
 
 	slotLoadBDtoCMDTable();
-	connect(ui.tv_CMDTable, SIGNAL(clicked(const QModelIndex&)), this, SLOT(slotTableClicked(const QModelIndex &)));//clicked只能左键 pressed左右都行
-	connect(ui.tv_CMDTable, SIGNAL(pressed(const QModelIndex&)), this, SLOT(slotTablePress(const QModelIndex &)));//clicked只能左键 pressed左右都行
-
+	connect(ui.tv_CMDTable, SIGNAL(clicked(const QModelIndex &)), this, SLOT(slotTableClicked(const QModelIndex &))); // clicked只能左键 pressed左右都行
+	connect(ui.tv_CMDTable, SIGNAL(pressed(const QModelIndex &)), this, SLOT(slotTablePress(const QModelIndex &)));	  // clicked只能左键 pressed左右都行
 }
 
 /*CMD操作窗口初始化*/
@@ -321,22 +339,27 @@ void SSHWindow::InitCMDWidget()
 	qfl_layout->addRow("描述:", le_CMDText);
 	qfl_layout->addRow(qb_CMDConfirm);
 	qfl_layout->setSpacing(10);
-	qfl_layout->setLabelAlignment(Qt::AlignLeft);//设置标签的对齐方式
+	qfl_layout->setLabelAlignment(Qt::AlignLeft); // 设置标签的对齐方式
 	qw_CMDWindow->setLayout(qfl_layout);
 	qw_CMDWindow->setWindowTitle("CMD操作");
 }
 
-
-
 /*捕捉回车键，发送命令*/
-void SSHWindow::keyReleaseEvent(QKeyEvent * e)
+void SSHWindow::keyReleaseEvent(QKeyEvent *e)
 {
-	if (e->key() == Qt::Key_Return)//回车键
+	// 焦点在终端模拟器(KTermWidget)上时，按键已由它通过 sendData 发送给服务器。
+	// 这里若不拦截，会与下面旧命令输入框(qe_SSHCmdLine)的逻辑重复发送，
+	// 导致"敲一次回车换行两次 / ^C 出现两次"。终端自行处理即可。
+	if (QApplication::focusWidget() && qobject_cast<KTermWidget *>(QApplication::focusWidget()))
+		return;
+
+	if (e->key() == Qt::Key_Return) // 回车键
 	{
 		qDebug() << "回车发送被调用 " << m_CurrentSSHIndex;
-		if (m_bConnectState[m_CurrentSSHIndex]) {
+		if (m_bConnectState[m_CurrentSSHIndex])
+		{
 			QString strCmd = qe_SSHCmdLine[m_CurrentSSHIndex]->text();
-			strCmd += "\n"; //添加回车
+			strCmd += "\n"; // 添加回车
 			/*！放到这个地方是因为 Qt::UniqueConnection不适用于lambda*/
 			QMetaObject::invokeMethod(m_sshSocket[m_CurrentSSHIndex], "slotSend", Qt::QueuedConnection, Q_ARG(QString, strCmd), Q_ARG(int, m_CurrentSSHIndex));
 		}
@@ -346,18 +369,18 @@ void SSHWindow::keyReleaseEvent(QKeyEvent * e)
 		}
 		qe_SSHCmdLine[m_CurrentSSHIndex]->clear();
 	}
-	if (e->matches(QKeySequence::Copy))//ctrl+c
+	if (e->matches(QKeySequence::Copy)) // ctrl+c
 	{
 		QString strCmd = (QString)3 + "\n";
-		//strCmd += "\n";
+		// strCmd += "\n";
 		if (m_bConnectState.size() != 0 && m_bConnectState[m_CurrentSSHIndex])
 		{
 			QMetaObject::invokeMethod(m_sshSocket[m_CurrentSSHIndex], "slotSend", Qt::QueuedConnection, Q_ARG(QString, strCmd), Q_ARG(int, m_CurrentSSHIndex));
 		}
 	}
-	if (e->key() == Qt::Key_Tab)//tab
+	if (e->key() == Qt::Key_Tab) // tab
 	{
-		QString strCmd = qe_SSHCmdLine[m_CurrentSSHIndex]->text() + (QString)9 + (QString)9 + " " + "\n";//加一个tab不行，我也不知道为什么？可能这个库也不是很好用
+		QString strCmd = qe_SSHCmdLine[m_CurrentSSHIndex]->text() + (QString)9 + (QString)9 + " " + "\n"; // 加一个tab不行，我也不知道为什么？可能这个库也不是很好用
 		if (m_bConnectState.size() != 0 && m_bConnectState[m_CurrentSSHIndex])
 		{
 			QMetaObject::invokeMethod(m_sshSocket[m_CurrentSSHIndex], "slotSend", Qt::QueuedConnection, Q_ARG(QString, strCmd), Q_ARG(int, m_CurrentSSHIndex));
@@ -369,27 +392,24 @@ void SSHWindow::keyReleaseEvent(QKeyEvent * e)
 void SSHWindow::InitForSSHTextRK()
 {
 	qe_SSHText[m_CurrentSSHIndex]->setContextMenuPolicy(Qt::CustomContextMenu);
-	QMenu* stdMenu = qe_SSHText[m_CurrentSSHIndex]->createStandardContextMenu();
-	QAction* clearAction = new QAction("Clear", qe_SSHText[m_CurrentSSHIndex]);
+	QMenu *stdMenu = qe_SSHText[m_CurrentSSHIndex]->createStandardContextMenu();
+	QAction *clearAction = new QAction("Clear", qe_SSHText[m_CurrentSSHIndex]);
 	stdMenu->addAction(clearAction);
 
 	/*显示右键*/
 	QObject::connect(qe_SSHText[m_CurrentSSHIndex], &QTextEdit::customContextMenuRequested, [=](QPoint x)
-	{
+					 {
 		stdMenu->move(qe_SSHText[m_CurrentSSHIndex]->mapToGlobal(x));
-		stdMenu->show();
-	});
+		stdMenu->show(); });
 	/*清空ssh窗口内容*/
 	QObject::connect(clearAction, &QAction::triggered, [=]()
-	{
-		qe_SSHText[m_CurrentSSHIndex]->clear();
-	});
+					 { qe_SSHText[m_CurrentSSHIndex]->clear(); });
 }
 
 /*创建新的命令到数据库*/
 void SSHWindow::slotCreatCMDToDB()
 {
-	if (ISCreat)//创建-新CMD
+	if (ISCreat) // 创建-新CMD
 	{
 		if (le_CMD->text() == "" || le_CMDText->text() == "")
 		{
@@ -398,7 +418,7 @@ void SSHWindow::slotCreatCMDToDB()
 		}
 		OpenDB();
 		QSqlQuery query(m_CMDListDB);
-		query.prepare("insert into CMDList (CMD, CMDtext) values (?,?)");//位置绑定的方式--插入数据
+		query.prepare("insert into CMDList (CMD, CMDtext) values (?,?)"); // 位置绑定的方式--插入数据
 		query.addBindValue(le_CMD->text());
 		query.addBindValue(le_CMDText->text());
 		query.exec();
@@ -406,7 +426,7 @@ void SSHWindow::slotCreatCMDToDB()
 		slotLoadBDtoCMDTable();
 		qw_CMDWindow->hide();
 	}
-	else//修改-旧CMD
+	else // 修改-旧CMD
 	{
 		if (le_CMD->text() == "" || le_CMDText->text() == "")
 		{
@@ -427,26 +447,24 @@ void SSHWindow::slotCreatCMDToDB()
 	}
 }
 
-
-
 /*删除Tab窗口*/
 void SSHWindow::slotCloseTab(int SSHIndex)
 {
 	/*断开连接 */
-//	delete m_sshSocket[SSHIndex];!!!不能直接在这删除，因为m_sshSocket整个类已经移动到另外一个线程中了，发送信号过去
+	//	delete m_sshSocket[SSHIndex];!!!不能直接在这删除，因为m_sshSocket整个类已经移动到另外一个线程中了，发送信号过去
 	if (m_pThread[SSHIndex]->isRunning())
 	{
 		m_pThread[SSHIndex]->exit(0);
 		/*终止线程的执行。 线程可以立即终止，也可以不立即终止，这取决于操作系统的调度策略。 在terminate()之后使用QThread::wait()来确定。
 		警告:此函数是危险的，不鼓励使用。 线程可以在其代码路径的任何位置终止。 线程可以在修改数据时终止。
 		线程没有机会在自己之后进行清理，解锁任何持有的互斥对象，等等。 简而言之，只有在绝对必要时才使用此函数。		 */
-		if (m_pThread[SSHIndex]->wait())//断开连接后面一定要有个wait回收资源，要不然软件崩溃！在wait执行过程之中调用调用析构
+		if (m_pThread[SSHIndex]->wait()) // 断开连接后面一定要有个wait回收资源，要不然软件崩溃！在wait执行过程之中调用调用析构
 		{
 			qDebug() << m_pThread[SSHIndex]->currentThreadId() << " 线程退出成功！";
 		}
 	}
 	delete m_pThread[SSHIndex];
-	m_pThread.erase(m_pThread.begin() + SSHIndex);//结束线程
+	m_pThread.erase(m_pThread.begin() + SSHIndex); // 结束线程
 	m_sshSocket.erase(m_sshSocket.begin() + SSHIndex);
 	for (size_t i = 0; i < m_sshSocket.size(); i++)
 	{
@@ -468,7 +486,6 @@ void SSHWindow::slotCloseTab(int SSHIndex)
 	qb_SSHConnet.erase(qb_SSHConnet.begin() + SSHIndex);
 	tw_NewTapWidget.erase(tw_NewTapWidget.begin() + SSHIndex);
 
-
 	m_SSHNum--;
 }
 
@@ -485,7 +502,8 @@ void SSHWindow::slotDataArrived(QString strMsg, QString strIp, int nPort, int SS
 void SSHWindow::slotRawDataArrived(QByteArray data, int SSHIndex)
 {
 	qDebug() << "[SSHWin] slotRawDataArrived:" << data.size() << "bytes, index:" << SSHIndex;
-	if (SSHIndex >= 0 && SSHIndex < m_termWidgets.size() && m_termWidgets[SSHIndex]) {
+	if (SSHIndex >= 0 && SSHIndex < m_termWidgets.size() && m_termWidgets[SSHIndex])
+	{
 		m_termWidgets[SSHIndex]->receiveData(data);
 	}
 }
@@ -499,7 +517,6 @@ void SSHWindow::slottest()
 /*测试槽函数---带参*/
 void SSHWindow::slottest(int SSHIndex)
 {
-
 }
 
 /*测试函数--无实际意义*/
@@ -518,21 +535,21 @@ void SSHWindow::slotGetSSHTabIndex(int SSHIndex)
 /*加载命令数据库文件到表格控件*/
 void SSHWindow::slotLoadBDtoCMDTable()
 {
-	OpenDB();//打来数据库
+	OpenDB(); // 打来数据库
 	QSqlQuery query(m_CMDListDB);
 	m_CMDItemModel->clear();
 	m_CMDItemModel->setHorizontalHeaderLabels(QStringList() << "命令" << "描述");
-	query.exec("create table CMDList(CMD text, CMDtext text)");//创建表,如果表存在了，就不创建
+	query.exec("create table CMDList(CMD text, CMDtext text)"); // 创建表,如果表存在了，就不创建
 	query.exec("select * from CMDList");
 	while (query.next())
 	{
-		//qDebug() << query.value(0).toString() << query.value(1).toString();
+		// qDebug() << query.value(0).toString() << query.value(1).toString();
 		m_itemList.append(new QStandardItem(query.value(0).toString()));
 		m_itemList.append(new QStandardItem(query.value(1).toString()));
 		m_CMDItemModel->appendRow(m_itemList);
 		m_itemList.clear();
 	}
-	ui.tv_CMDTable->setSelectionBehavior(QAbstractItemView::SelectRows);	//选择行
+	ui.tv_CMDTable->setSelectionBehavior(QAbstractItemView::SelectRows); // 选择行
 	CloseDB();
 }
 
@@ -545,7 +562,8 @@ void SSHWindow::slotTableClicked(const QModelIndex &index)
 	m_CMDtext = m_CMDItemModel->data(indextemp).toString();
 
 	qDebug() << "CMD表格被调用 " << m_CurrentSSHIndex;
-	if (m_bConnectState.size() > m_CurrentSSHIndex && m_bConnectState[m_CurrentSSHIndex]) {
+	if (m_bConnectState.size() > m_CurrentSSHIndex && m_bConnectState[m_CurrentSSHIndex])
+	{
 		if (m_CMD == "reboot")
 		{
 			int ret = QMessageBox::question(this, "警告", "是否重启", QMessageBox::Yes | QMessageBox::No);
@@ -554,7 +572,7 @@ void SSHWindow::slotTableClicked(const QModelIndex &index)
 				return;
 			}
 		}
-		m_CMD += "\n"; //添加回车
+		m_CMD += "\n"; // 添加回车
 		/*！放到这个地方是因为 Qt::UniqueConnection不适用于lambda*/
 		QMetaObject::invokeMethod(m_sshSocket[m_CurrentSSHIndex], "slotSend", Qt::QueuedConnection, Q_ARG(QString, m_CMD), Q_ARG(int, m_CurrentSSHIndex));
 	}
@@ -565,7 +583,7 @@ void SSHWindow::slotTableClicked(const QModelIndex &index)
 }
 
 /*CMD表格被点击*/
-void SSHWindow::slotTablePress(const QModelIndex & index)
+void SSHWindow::slotTablePress(const QModelIndex &index)
 {
 	QModelIndex indextemp = m_CMDItemModel->index(index.row(), 0);
 	m_CMD = m_CMDItemModel->data(indextemp).toString();

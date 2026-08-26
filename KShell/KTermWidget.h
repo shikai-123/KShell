@@ -35,6 +35,7 @@ public:
 
 signals:
     void sendData(const QByteArray &data);
+    void sizeChanged(int rows, int cols);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -77,9 +78,12 @@ private:
     bool m_selecting = false;
     bool m_hasSelection = false;
 
+    int m_mouseMode = VTERM_PROP_MOUSE_NONE;
+
     void initVTerm(int rows, int cols);
     void updateCellSize();
     void updateTermSize();
+    void flushOutput();
     QColor vtermColorToQColor(const VTermColor &color) const;
     VTermModifier qtModifiersToVTerm(Qt::KeyboardModifiers mods) const;
     VTermKey qtKeyToVTermKey(int qtKey) const;

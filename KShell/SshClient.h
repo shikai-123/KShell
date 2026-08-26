@@ -44,6 +44,7 @@ public slots:
 	void slotSend(QString CMD, int SSHIndex);//发送命令
 	void slotSendByQByteArray(QString strIpPort, QByteArray arrMsg);//未调用
 	void slotSendRawData(QByteArray data, int SSHIndex);//发送原始字节数据
+	void slotTerminalResize(int cols, int rows);//改变远端PTY终端尺寸
 	void slotDisconnected();
 	void slotCreateConnection();
 	void slotConnected();
