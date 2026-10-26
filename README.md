@@ -97,6 +97,37 @@ Kshell是一款基于QT和Libcurl开的window平台的一个SSH，FTP工具。
 但是如果你想全面的了解它的功能，可参考我在b站的视频
 
 
+# :hammer_and_wrench: 从源码构建
+
+## 环境
+
+| 项 | 版本 |
+|---|---|
+| Qt | 6.11.1 (msvc2022_64)，需包含 `core5compat` 模块 |
+| 编译器 | Visual Studio 2022，x64 |
+| 构建工具 | qmake + nmake |
+
+## 步骤
+
+```bat
+call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+qmake KShell.pro -spec win32-msvc "CONFIG+=release"
+nmake release
+```
+
+产物输出到 `build/release/KShell.exe`（Debug 为 `build/debug/`）。
+
+> 构建依赖的 QSsh / libcurl / zlib 二进制（`.dll`、`.lib`）不纳入版本库，
+> 请按下文「引用的第三方库」自行编译，并按下面的目录摆放：
+>
+> ```
+> KShell/lib/release/   QSsh.lib  libcurl.lib  zlib.lib  Botand.lib  (+ 对应 .dll)
+> KShell/lib/debug/     QSshd.lib libcurl_debug.lib zlib.lib Botand.lib (+ 对应 .dll)
+> Debug/                Botand.dll 等运行期 dll
+> ```
+>
+> 缺少这些文件时 qmake 能通过，但 nmake 链接阶段会失败。
+
 # 引用的第三方库
 QSHH
 一般来说,这个lib会在遍历lib上遇到一些问题.可以参考我这篇文章,帮助你更快的编译lib.
@@ -105,3 +136,8 @@ https://blog.csdn.net/weixin_46537765/article/details/126265086?spm=1001.2014.30
 Libcurl
 选用这个库的目的是为了同时支持FTP和SFTP,QSSH只能支持SFTP.
 要注意,编译Libcurl的时候,一定要加上openssl才能同时支持,要不然只能支持FTP.
+
+# 分支说明
+
+仓库只保留 `master` 一条开发分支。2024 年的旧版历史归档在标签 `archive/main-2024` 下，如需查阅请
+`git checkout archive/main-2024`。基于 Qt 6 + CMake 重写的新版本在独立仓库中维护。
